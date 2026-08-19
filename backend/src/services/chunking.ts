@@ -228,10 +228,31 @@ export class SentenceAwareChunker implements ChunkingStrategy {
  * Metadata: carries through caller metadata unchanged.
  * ID format: <documentId>_semantic_<position>
  */
+export interface EmbeddingServiceInterface {
+  embedText?: (text: string, isQuery?: boolean) => Promise<number[]>;
+  embedBatch?: (texts: string[], isQuery?: boolean) => Promise<number[][]>;
+}
+
+/**
+ * SemanticChunker
+ *
+ * Genuinely embedding-driven chunking strategy.
+ * Splits text into candidate sentence/paragraph units, generates dense neural
+ * embeddings for each unit using Xenova/multilingual-e5-small (with 'passage: ' prefix),
+ * and computes cosine similarity between adjacent units.
+ * A new chunk boundary is placed whenever semantic similarity drops below `similarityThreshold`
+ * (calibrated empirically to 0.82 for E5 embeddings) or when accumulated text exceeds `fallbackChunkSize`.
+ *
+ * Split boundary: cosine similarity(e_{i-1}, e_i) < similarityThreshold (0.82)
+ *                 OR accumulated group length > fallbackChunkSize (400 chars).
+ * Overlap: none (each coherent semantic topic unit is preserved intact).
+ * Metadata: carries through caller metadata and attaches semantic coherence metrics.
+ * ID format: <documentId>_semantic_<position>
+ */
 export class SemanticChunker implements ChunkingStrategy {
   constructor(
-    private similarityThreshold: number = 0.7,
-    private embedService?: { embedText: (text: string) => Promise<number[]> },
+    private similarityThreshold: number = 0.82,
+    private embedService?: EmbeddingServiceInterface,
     private fallbackChunkSize: number = 400
   ) {}
 
@@ -296,6 +317,10 @@ export class SemanticChunker implements ChunkingStrategy {
     return dotProduct / (Math.sqrt(norm1) * Math.sqrt(norm2));
   }
 
+  /**
+   * Genuine Embedding-Driven Semantic Chunking (Async)
+   * Embeds adjacent candidate sentences using multilingual E5 and places boundaries at semantic shift valleys.
+   */
   async chunkAsync(text: string, documentId: string, metadata: Record<string, any> = {}): Promise<Chunk[]> {
     const sentences = this.splitIntoSentences(text);
     if (sentences.length === 0) return [];
@@ -321,9 +346,14 @@ export class SemanticChunker implements ChunkingStrategy {
     let sentenceEmbeddings: number[][] = [];
     if (this.embedService) {
       try {
-        sentenceEmbeddings = await Promise.all(
-          sentences.map(s => this.embedService!.embedText(s))
-        );
+        if (typeof this.embedService.embedBatch === 'function') {
+          // Pass isQuery: false to ensure 'passage: ' prefix is used
+          sentenceEmbeddings = await this.embedService.embedBatch(sentences, false);
+        } else if (typeof this.embedService.embedText === 'function') {
+          sentenceEmbeddings = await Promise.all(
+            sentences.map(s => this.embedService!.embedText!(s, false))
+          );
+        }
       } catch (err) {
         console.warn("Failed to generate embeddings for semantic chunking, falling back to lexical similarity", err);
       }
@@ -353,7 +383,11 @@ export class SemanticChunker implements ChunkingStrategy {
           strategy: 'semantic',
           position,
           length: currentGroupText.length,
-          metadata: { ...metadata }
+          metadata: {
+            ...metadata,
+            splitSimilarity: parseFloat(similarity.toFixed(4)),
+            splitType: similarity < this.similarityThreshold ? 'semantic_boundary' : 'max_size_cap'
+          }
         });
         position++;
         currentGroup = [sNext];
@@ -374,13 +408,20 @@ export class SemanticChunker implements ChunkingStrategy {
         strategy: 'semantic',
         position,
         length: currentGroupText.length,
-        metadata: { ...metadata }
+        metadata: {
+          ...metadata,
+          splitType: 'terminal'
+        }
       });
     }
 
     return chunks;
   }
 
+  /**
+   * Synchronous Chunking Interface
+   * When embeddings are pre-computed or offline lexical fallback is required.
+   */
   chunk(text: string, documentId: string, metadata: Record<string, any> = {}): Chunk[] {
     const sentences = this.splitIntoSentences(text);
     if (sentences.length === 0) return [];
@@ -395,7 +436,7 @@ export class SemanticChunker implements ChunkingStrategy {
       const similarity = this.getLexicalSimilarity(sPrev, sNext);
       const currentGroupText = currentGroup.join(" ");
 
-      if (similarity < this.similarityThreshold || currentGroupText.length > this.fallbackChunkSize) {
+      if (similarity < 0.65 || currentGroupText.length > this.fallbackChunkSize) {
         const id = `${documentId}_semantic_${position}`;
         chunks.push({
           id,

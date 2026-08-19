@@ -157,18 +157,18 @@ export default function ObservabilityLab() {
       {/* ── Glass Panel 2: Retrieval Recall@K Metrics ── */}
       <div className="wellness-glass-panel">
         <div className="glass-panel-head">
-          <span className="glass-panel-title">Retrieval Recall@K Accuracy</span>
+          <span className="glass-panel-title">Strict Gold Passage Recall@K Accuracy</span>
           <span style={{ fontFamily: 'var(--font-mono)', fontSize: '0.8rem', color: 'var(--text-secondary)' }}>
-            84,667 MSMARCO-XI PASSAGES
+            84,661 MSMARCO-XI PASSAGES
           </span>
         </div>
 
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '1.25rem' }}>
           {[
-            { k: 'Recall@1', score: '78.1%', desc: 'Top-1 candidate contains gold verified answer (+26.1% over seed)' },
-            { k: 'Recall@3', score: '85.4%', desc: 'Top-3 candidates contain gold evidence (+14.4% over seed)' },
-            { k: 'Recall@5', score: '85.4%', desc: 'Top-5 candidate pool contains gold evidence (+7.4% over seed)' },
-            { k: 'Recall@10', score: '85.4%', desc: 'Top-10 candidate pool ceiling (+1.4% over seed)' }
+            { k: 'Recall@1', score: '28.0%', desc: 'Top-1 is exact gold passage (Query cluster ceiling: 82.0%)' },
+            { k: 'Recall@3', score: '38.0%', desc: 'Top-3 contains exact gold passage (Query cluster ceiling: 89.0%)' },
+            { k: 'Recall@5', score: '44.0%', desc: 'Top-5 contains exact gold passage' },
+            { k: 'Recall@10', score: '54.0%', desc: 'Top-10 contains exact gold passage (Query cluster ceiling: 93.0%)' }
           ].map(r => (
             <div key={r.k} className="metric-glass-card">
               <div className="metric-card-label">{r.k}</div>

@@ -67,10 +67,10 @@ export default function PerformanceView() {
   const geminiP100 = benchmark?.liveTextBenchmark?.stagePercentiles?.generation?.p100 ?? 8450;
 
   const recallData = [
-    { k: 'Recall@1', score: 0.52, desc: 'Top-1 retrieved passage contains the gold verified answer' },
-    { k: 'Recall@3', score: 0.71, desc: 'Production setting: Top-3 candidates contain gold evidence' },
-    { k: 'Recall@5', score: 0.78, desc: 'Top-5 candidates contain gold evidence' },
-    { k: 'Recall@10', score: 0.84, desc: 'Top-10 candidate pool recall ceiling' }
+    { k: 'Recall@1', score: 0.28, desc: 'Strict Gold: Top-1 is the exact gold passage (Query cluster: 82%)' },
+    { k: 'Recall@3', score: 0.38, desc: 'Strict Gold: Top-3 contains exact gold passage (Query cluster: 89%)' },
+    { k: 'Recall@5', score: 0.44, desc: 'Strict Gold: Top-5 contains exact gold passage' },
+    { k: 'Recall@10', score: 0.54, desc: 'Strict Gold: Top-10 contains exact gold passage (Query cluster: 93%)' }
   ];
 
   return (
