@@ -1,0 +1,402 @@
+[
+  {
+    "queryId": "msmarco-xi-en-q1",
+    "queryNo": 1,
+    "query": ". what is a corporation?",
+    "answer": "A corporation is a company or group of people authorized to act as a single entity and recognized as such in law.",
+    "language": "en",
+    "source": "ai4bharat/MSMARCO-XI (Official English MSMARCO)"
+  },
+  {
+    "queryId": "msmarco-xi-en-q2",
+    "queryNo": 2,
+    "query": "why did rachel carson write an obligation to endure",
+    "answer": "Rachel Carson writes The Obligation to Endure because believes that as man tries to eliminate unwanted insects and weeds, however he is actually causing more problems by polluting the environment.",
+    "language": "en",
+    "source": "ai4bharat/MSMARCO-XI (Official English MSMARCO)"
+  },
+  {
+    "queryId": "msmarco-xi-en-q3",
+    "queryNo": 3,
+    "query": "chart for foods low in potassium.",
+    "answer": "No Answer Present.",
+    "language": "en",
+    "source": "ai4bharat/MSMARCO-XI (Official English MSMARCO)"
+  },
+  {
+    "queryId": "msmarco-xi-en-q4",
+    "queryNo": 4,
+    "query": "bottom front of a cargo ship",
+    "answer": "No Answer Present.",
+    "language": "en",
+    "source": "ai4bharat/MSMARCO-XI (Official English MSMARCO)"
+  },
+  {
+    "queryId": "msmarco-xi-en-q5",
+    "queryNo": 5,
+    "query": "honesty or integrity definition",
+    "answer": "Honesty: The condition of being honest. \nIntegrity: The value and morals of a individual in relation or in addition to honesty.",
+    "language": "en",
+    "source": "ai4bharat/MSMARCO-XI (Official English MSMARCO)"
+  },
+  {
+    "queryId": "msmarco-xi-en-q6",
+    "queryNo": 6,
+    "query": "what is barometric pressure in lincoln ne now?",
+    "answer": "No Answer Present.",
+    "language": "en",
+    "source": "ai4bharat/MSMARCO-XI (Official English MSMARCO)"
+  },
+  {
+    "queryId": "msmarco-xi-en-q7",
+    "queryNo": 7,
+    "query": "struthers city school district state number",
+    "answer": "No Answer Present.",
+    "language": "en",
+    "source": "ai4bharat/MSMARCO-XI (Official English MSMARCO)"
+  },
+  {
+    "queryId": "msmarco-xi-en-q8",
+    "queryNo": 8,
+    "query": "does medical marijuana help with ptsd",
+    "answer": "No Answer Present.",
+    "language": "en",
+    "source": "ai4bharat/MSMARCO-XI (Official English MSMARCO)"
+  },
+  {
+    "queryId": "msmarco-xi-en-q9",
+    "queryNo": 9,
+    "query": "how many women did frank gifford marry",
+    "answer": "Frank Gifford married to three women.",
+    "language": "en",
+    "source": "ai4bharat/MSMARCO-XI (Official English MSMARCO)"
+  },
+  {
+    "queryId": "msmarco-xi-en-q10",
+    "queryNo": 10,
+    "query": "how many ongoing trump administration investigations",
+    "answer": "No Answer Present.",
+    "language": "en",
+    "source": "ai4bharat/MSMARCO-XI (Official English MSMARCO)"
+  },
+  {
+    "queryId": "msmarco-xi-hi-q1",
+    "queryNo": 1,
+    "query": "कॉर्पोरेशन क्या है?",
+    "answer": "निगम एक कंपनी या लोगों का समूह होता है जो एक एकल इकाई के रूप में कार्य करने के लिए अधिकृत होता है और कानून में इस प्रकार से मान्यता प्राप्त होती है।",
+    "language": "hi",
+    "source": "ai4bharat/MSMARCO-XI (hi)"
+  },
+  {
+    "queryId": "msmarco-xi-hi-q2",
+    "queryNo": 2,
+    "query": "रेचल कार्सन ने क्यों एक दायित्व बर्दाश्त करने के लिए लिखा",
+    "answer": "रेचल कार्सन ने लिखा है कि \"द ओब्लिगेशन टू एंड्योर\" क्योंकि उनका मानना है कि जैसे-जैसे आदमी अवांछित कीड़ों और खरपतवारों को खत्म करने की कोशिश करता है, वैसे-वैसे वह वास्तव में पर्यावरण को प्रदूषित करके और अधिक समस्याएं पैदा कर रहा है।",
+    "language": "hi",
+    "source": "ai4bharat/MSMARCO-XI (hi)"
+  },
+  {
+    "queryId": "msmarco-xi-hi-q3",
+    "queryNo": 3,
+    "query": "पोटेशियम में कम खाद्य पदार्थों का चार्ट।",
+    "answer": "कोई उत्तर नहीं मिला।",
+    "language": "hi",
+    "source": "ai4bharat/MSMARCO-XI (hi)"
+  },
+  {
+    "queryId": "msmarco-xi-hi-q4",
+    "queryNo": 4,
+    "query": "मालवाहक जहाज़ के नीचे की तरफ",
+    "answer": "कोई उत्तर नहीं मिला।",
+    "language": "hi",
+    "source": "ai4bharat/MSMARCO-XI (hi)"
+  },
+  {
+    "queryId": "msmarco-xi-hi-q5",
+    "queryNo": 5,
+    "query": "ईमानदारी या सच्चाई की परिभाषा",
+    "answer": "ईमानदारी: ईमानदार होने की स्थिति। \nनिष्ठा: ईमानदारी के संबंध में या उसके अतिरिक्त व्यक्ति का मूल्य और नैतिकता।",
+    "language": "hi",
+    "source": "ai4bharat/MSMARCO-XI (hi)"
+  },
+  {
+    "queryId": "msmarco-xi-hi-q6",
+    "queryNo": 6,
+    "query": "लिंकन में अब वायुमंडलीय दबाव क्या है?",
+    "answer": "कोई उत्तर नहीं मिला।",
+    "language": "hi",
+    "source": "ai4bharat/MSMARCO-XI (hi)"
+  },
+  {
+    "queryId": "msmarco-xi-hi-q7",
+    "queryNo": 7,
+    "query": "स्ट्रूथर्स शहर स्कूल जिला राज्य संख्या",
+    "answer": "कोई उत्तर नहीं मिला।",
+    "language": "hi",
+    "source": "ai4bharat/MSMARCO-XI (hi)"
+  },
+  {
+    "queryId": "msmarco-xi-hi-q8",
+    "queryNo": 8,
+    "query": "क्या चिकित्सीय मारिजुआना मदत करता है?",
+    "answer": "कोई उत्तर नहीं मिला।",
+    "language": "hi",
+    "source": "ai4bharat/MSMARCO-XI (hi)"
+  },
+  {
+    "queryId": "msmarco-xi-hi-q9",
+    "queryNo": 9,
+    "query": "फ्रैंक गिफोर्ड ने कितनी महिलाओं से शादी की",
+    "answer": "फ्रैंक गिफोर्ड ने तीन महिलाओं से शादी की।",
+    "language": "hi",
+    "source": "ai4bharat/MSMARCO-XI (hi)"
+  },
+  {
+    "queryId": "msmarco-xi-hi-q10",
+    "queryNo": 10,
+    "query": "कितनी ट्रम्प प्रशासन की जांच चल रही हैं",
+    "answer": "कोई उत्तर नहीं मिला।",
+    "language": "hi",
+    "source": "ai4bharat/MSMARCO-XI (hi)"
+  },
+  {
+    "queryId": "msmarco-xi-kn-q1",
+    "queryNo": 1,
+    "query": ". ಕಾರ್ಪೊರೇಷನ್ ಎಂದರೇನು?",
+    "answer": "ನಿಗಮವು ಒಂದು ಏಕೈಕ ಘಟಕವಾಗಿ ಕಾರ್ಯನಿರ್ವಹಿಸಲು ಮತ್ತು ಕಾನೂನಿನಲ್ಲಿ ಅಂತಹ ಸ್ಥಾನಮಾನವನ್ನು ಪಡೆದಿರುವ ಜನರ ಒಂದು ಕಂಪನಿ ಅಥವಾ ಗುಂಪಾಗಿದೆ.",
+    "language": "kn",
+    "source": "ai4bharat/MSMARCO-XI (kn)"
+  },
+  {
+    "queryId": "msmarco-xi-kn-q2",
+    "queryNo": 2,
+    "query": "ರಾಚೆಲ್ ಕಾರ್ಸನ್ ಅವರು ಸಹಿಸಿಕೊಳ್ಳಬೇಕಾದ ಒಂದು ಬಾಧ್ಯತೆಯನ್ನು ಏಕೆ ಬರೆದರು?",
+    "answer": "ಮನುಷ್ಯನು ಅನಪೇಕ್ಷಿತ ಕೀಟಗಳು ಮತ್ತು ಕಳೆಗಳನ್ನು ನಿರ್ಮೂಲನೆ ಮಾಡಲು ಪ್ರಯತ್ನಿಸುತ್ತಿರುವಾಗ, ಆತ ವಾಸ್ತವವಾಗಿ ಪರಿಸರವನ್ನು ಕಲುಷಿತಗೊಳಿಸುವ ಮೂಲಕ ಹೆಚ್ಚಿನ ಸಮಸ್ಯೆಗಳನ್ನು ಉಂಟುಮಾಡುತ್ತಿದ್ದಾನೆ ಎಂದು ನಂಬುವ ಕಾರಣದಿಂದ ರಾಚೆಲ್ ಕಾರ್ಸನ್ ದಿ ಒಬ್ಲಿಗೇಷನ್ ಟು ಎಂಡ್ಯೂರ್ ಬರೆಯುತ್ತಾರೆ.",
+    "language": "kn",
+    "source": "ai4bharat/MSMARCO-XI (kn)"
+  },
+  {
+    "queryId": "msmarco-xi-kn-q3",
+    "queryNo": 3,
+    "query": "ಪೊಟ್ಯಾಸಿಯಮ್ ಕಡಿಮೆ ಇರುವ ಆಹಾರಗಳ ಪಟ್ಟಿ.",
+    "answer": "ಯಾವುದೇ ಉತ್ತರ ಲಭ್ಯವಿಲ್ಲ.",
+    "language": "kn",
+    "source": "ai4bharat/MSMARCO-XI (kn)"
+  },
+  {
+    "queryId": "msmarco-xi-kn-q4",
+    "queryNo": 4,
+    "query": "ಸರಕು ಹಡಗಿನ ಮುಂಭಾಗದ ಕೆಳಭಾಗ",
+    "answer": "ಯಾವುದೇ ಉತ್ತರ ಲಭ್ಯವಿಲ್ಲ.",
+    "language": "kn",
+    "source": "ai4bharat/MSMARCO-XI (kn)"
+  },
+  {
+    "queryId": "msmarco-xi-kn-q5",
+    "queryNo": 5,
+    "query": "ಪ್ರಾಮಾಣಿಕತೆ ಅಥವಾ ಸಮಗ್ರತೆಯ ವ್ಯಾಖ್ಯಾನ",
+    "answer": "ಪ್ರಾಮಾಣಿಕತೆ: ಪ್ರಾಮಾಣಿಕತೆಯ ಸ್ಥಿತಿ. \nಸಮಗ್ರತೆ: ಪ್ರಾಮಾಣಿಕತೆಗೆ ಸಂಬಂಧಿಸಿದಂತೆ ಅಥವಾ ಅದಕ್ಕೆ ಹೆಚ್ಚಿನದಾಗಿ ವ್ಯಕ್ತಿಯ ಮೌಲ್ಯ ಮತ್ತು ನೈತಿಕತೆ.",
+    "language": "kn",
+    "source": "ai4bharat/MSMARCO-XI (kn)"
+  },
+  {
+    "queryId": "msmarco-xi-kn-q6",
+    "queryNo": 6,
+    "query": "ಲಿಂಕನ್ ನಲ್ಲಿ ಈಗ ಬ್ಯಾರೋಮೆಟ್ರಿಕ್ ಒತ್ತಡ ಏನು?",
+    "answer": "ಯಾವುದೇ ಉತ್ತರ ಲಭ್ಯವಿಲ್ಲ.",
+    "language": "kn",
+    "source": "ai4bharat/MSMARCO-XI (kn)"
+  },
+  {
+    "queryId": "msmarco-xi-kn-q7",
+    "queryNo": 7,
+    "query": "ಸ್ಟ್ರತರ್ಸ್ ನಗರ ಶಾಲಾ ಜಿಲ್ಲೆ ರಾಜ್ಯ ಸಂಖ್ಯೆ",
+    "answer": "ಯಾವುದೇ ಉತ್ತರ ಲಭ್ಯವಿಲ್ಲ.",
+    "language": "kn",
+    "source": "ai4bharat/MSMARCO-XI (kn)"
+  },
+  {
+    "queryId": "msmarco-xi-kn-q8",
+    "queryNo": 8,
+    "query": "ವೈದ್ಯಕೀಯ ಗಾಂಜಾ ಪದಾರ್ಥವು ನಿಮ್ಮ ಸಮಸ್ಯೆಗಳಿಗೆ ಸಹಾಯ ಮಾಡುತ್ತದೆಯೇ?",
+    "answer": "ಯಾವುದೇ ಉತ್ತರ ಲಭ್ಯವಿಲ್ಲ.",
+    "language": "kn",
+    "source": "ai4bharat/MSMARCO-XI (kn)"
+  },
+  {
+    "queryId": "msmarco-xi-kn-q9",
+    "queryNo": 9,
+    "query": "ಫ್ರಾಂಕ್ ಗಿಫೋರ್ಡ್ ಎಷ್ಟು ಮಹಿಳೆಯರನ್ನು ಮದುವೆಯಾಗಿದ್ದಾರೆ",
+    "answer": "ಫ್ರಾಂಕ್ ಗಿಫೋರ್ಡ್ ಮೂವರು ಮಹಿಳೆಯರನ್ನು ವಿವಾಹವಾದರು.",
+    "language": "kn",
+    "source": "ai4bharat/MSMARCO-XI (kn)"
+  },
+  {
+    "queryId": "msmarco-xi-kn-q10",
+    "queryNo": 10,
+    "query": "ಟ್ರಂಪ್ ಆಡಳಿತದಲ್ಲಿ ಎಷ್ಟು ತನಿಖೆಗಳು ನಡೆಯುತ್ತಿವೆ",
+    "answer": "ಯಾವುದೇ ಉತ್ತರ ಲಭ್ಯವಿಲ್ಲ.",
+    "language": "kn",
+    "source": "ai4bharat/MSMARCO-XI (kn)"
+  },
+  {
+    "queryId": "msmarco-xi-ta-q1",
+    "queryNo": 1,
+    "query": "ஒரு நிறுவனம் என்பது என்ன?",
+    "answer": "ஒரு நிறுவனம் என்பது சட்டத்தில் அங்கீகரிக்கப்பட்ட ஒரு தனி அமைப்பாக செயல்பட அங்கீகரிக்கப்பட்ட ஒரு நிறுவனம் அல்லது மக்கள் குழுவாகும்.",
+    "language": "ta",
+    "source": "ai4bharat/MSMARCO-XI (ta)"
+  },
+  {
+    "queryId": "msmarco-xi-ta-q2",
+    "queryNo": 2,
+    "query": "ஏன் ரேச்சல் கார்சன் ஒரு கடமையை நிறைவேற்ற வேண்டும் என்று எழுதினார்",
+    "answer": "ரேச்சல் கார்சன் எழுதுகிறார், மனிதன் விரும்பத்தகாத பூச்சிகளையும் களைகளையும் அகற்ற முயற்சிக்கும்போது, அவன் உண்மையில் சுற்றுச்சூழலை மாசுபடுத்துவதன் மூலம் மேலும் பிரச்சனைகளை உருவாக்குகிறான் என்பதால் இதை சகித்துக் கொள்ள வேண்டிய கடமை என்று கருதுகிறார்.",
+    "language": "ta",
+    "source": "ai4bharat/MSMARCO-XI (ta)"
+  },
+  {
+    "queryId": "msmarco-xi-ta-q3",
+    "queryNo": 3,
+    "query": "பொட்டாசியம் குறைவுள்ள உணவுகளுக்கான வரைபடம்.",
+    "answer": "எந்த பதிலும் இல்லை.",
+    "language": "ta",
+    "source": "ai4bharat/MSMARCO-XI (ta)"
+  },
+  {
+    "queryId": "msmarco-xi-ta-q4",
+    "queryNo": 4,
+    "query": "சரக்குக் கப்பலின் முன்பகுதி",
+    "answer": "எந்த பதிலும் இல்லை.",
+    "language": "ta",
+    "source": "ai4bharat/MSMARCO-XI (ta)"
+  },
+  {
+    "queryId": "msmarco-xi-ta-q5",
+    "queryNo": 5,
+    "query": "நேர்மை அல்லது நேர்மையின் வரையறை",
+    "answer": "நேர்மை: நேர்மையாக இருப்பதன் நிலை. \nநேர்மையின் அடிப்படையில் ஒரு தனிநபரின் மதிப்பு மற்றும் ஒழுக்கம்.",
+    "language": "ta",
+    "source": "ai4bharat/MSMARCO-XI (ta)"
+  },
+  {
+    "queryId": "msmarco-xi-ta-q6",
+    "queryNo": 6,
+    "query": "லிங்கனில் இப்போது பரோமெட்ரிக் அழுத்தம் என்ன?",
+    "answer": "எந்த பதிலும் இல்லை.",
+    "language": "ta",
+    "source": "ai4bharat/MSMARCO-XI (ta)"
+  },
+  {
+    "queryId": "msmarco-xi-ta-q7",
+    "queryNo": 7,
+    "query": "ஸ்ட்ரதர்ஸ் நகரப் பள்ளி மாவட்டம் மாநில எண்",
+    "answer": "எந்த பதிலும் இல்லை.",
+    "language": "ta",
+    "source": "ai4bharat/MSMARCO-XI (ta)"
+  },
+  {
+    "queryId": "msmarco-xi-ta-q8",
+    "queryNo": 8,
+    "query": "மருத்துவ மரிஜுவானா என்பது என்ன செய்ய உதவுகிறது?",
+    "answer": "எந்த பதிலும் இல்லை.",
+    "language": "ta",
+    "source": "ai4bharat/MSMARCO-XI (ta)"
+  },
+  {
+    "queryId": "msmarco-xi-ta-q9",
+    "queryNo": 9,
+    "query": "ஃபிராங்க் கிஃபோர்டு எத்தனை பெண்களை திருமணம் செய்து கொண்டார்",
+    "answer": "பிராங்க் கிஃபோர்ட் மூன்று பெண்களை மணந்தார்.",
+    "language": "ta",
+    "source": "ai4bharat/MSMARCO-XI (ta)"
+  },
+  {
+    "queryId": "msmarco-xi-ta-q10",
+    "queryNo": 10,
+    "query": "ட்ரம்ப் நிர்வாகத்தின் எத்தனை விசாரணைகள் நடந்து கொண்டிருக்கின்றன",
+    "answer": "எந்த பதிலும் இல்லை.",
+    "language": "ta",
+    "source": "ai4bharat/MSMARCO-XI (ta)"
+  },
+  {
+    "queryId": "msmarco-xi-te-q1",
+    "queryNo": 1,
+    "query": "కార్పొరేషన్ అంటే ఏమిటి?",
+    "answer": "కార్పొరేషన్ అనేది ఒకే సంస్థగా వ్యవహరించడానికి మరియు చట్టంలో గుర్తింపు పొందిన వ్యక్తుల సమూహం లేదా కంపెనీ.",
+    "language": "te",
+    "source": "ai4bharat/MSMARCO-XI (te)"
+  },
+  {
+    "queryId": "msmarco-xi-te-q2",
+    "queryNo": 2,
+    "query": "రాచెల్ కార్సన్ ఎందుకు సహించాల్సిన బాధ్యతను వ్రాశారు",
+    "answer": "మనుషులు అవాంఛిత కీటకాలు మరియు కలుపు మొక్కలను తొలగించడానికి ప్రయత్నిస్తున్నప్పుడు, అతను వాస్తవానికి పర్యావరణాన్ని కలుషితం చేయడం ద్వారా మరిన్ని సమస్యలను సృష్టిస్తున్నాడని నమ్మే రేచెల్ కార్సన్ ది ఒబ్లిగేషన్ టు ఎండ్యూర్ రాశారు.",
+    "language": "te",
+    "source": "ai4bharat/MSMARCO-XI (te)"
+  },
+  {
+    "queryId": "msmarco-xi-te-q3",
+    "queryNo": 3,
+    "query": "పొటాషియం తక్కువగా ఉండే ఆహారాల పట్టిక.",
+    "answer": "సమాధానం ఇవ్వలేదు.",
+    "language": "te",
+    "source": "ai4bharat/MSMARCO-XI (te)"
+  },
+  {
+    "queryId": "msmarco-xi-te-q4",
+    "queryNo": 4,
+    "query": "సరుకు నౌక యొక్క దిగువ భాగం",
+    "answer": "సమాధానం ఇవ్వలేదు.",
+    "language": "te",
+    "source": "ai4bharat/MSMARCO-XI (te)"
+  },
+  {
+    "queryId": "msmarco-xi-te-q5",
+    "queryNo": 5,
+    "query": "నిజాయితీ లేదా సమగ్రత నిర్వచనం",
+    "answer": "నిజాయితీ: నిజాయితీగా ఉండటం. \nసమగ్రత: నిజాయితీతో పాటు లేదా దానికి అనుగుణంగా వ్యక్తి యొక్క విలువ మరియు నైతికత.",
+    "language": "te",
+    "source": "ai4bharat/MSMARCO-XI (te)"
+  },
+  {
+    "queryId": "msmarco-xi-te-q6",
+    "queryNo": 6,
+    "query": "లింకన్ నేలో బారోమెట్రిక్ పీడనం ఇప్పుడు ఎంత?",
+    "answer": "సమాధానం ఇవ్వలేదు.",
+    "language": "te",
+    "source": "ai4bharat/MSMARCO-XI (te)"
+  },
+  {
+    "queryId": "msmarco-xi-te-q7",
+    "queryNo": 7,
+    "query": "స్ట్రతర్స్ సిటీ స్కూల్ జిల్లా రాష్ట్ర సంఖ్య",
+    "answer": "సమాధానం ఇవ్వలేదు.",
+    "language": "te",
+    "source": "ai4bharat/MSMARCO-XI (te)"
+  },
+  {
+    "queryId": "msmarco-xi-te-q8",
+    "queryNo": 8,
+    "query": "వైద్య మారిజువానా మైట్రోక్స్‌తో సహాయపడుతుందా?",
+    "answer": "సమాధానం ఇవ్వలేదు.",
+    "language": "te",
+    "source": "ai4bharat/MSMARCO-XI (te)"
+  },
+  {
+    "queryId": "msmarco-xi-te-q9",
+    "queryNo": 9,
+    "query": "ఫ్రాంక్ గిఫోర్డ్ ఎంత మంది మహిళలను వివాహం చేసుకున్నాడు",
+    "answer": "ఫ్రాంక్ గిఫోర్డ్ ముగ్గురు మహిళలను వివాహం చేసుకున్నాడు.",
+    "language": "te",
+    "source": "ai4bharat/MSMARCO-XI (te)"
+  },
+  {
+    "queryId": "msmarco-xi-te-q10",
+    "queryNo": 10,
+    "query": "ప్రస్తుతం ట్రంప్ పరిపాలనలో ఎన్ని దర్యాప్తులు జరుగుతున్నాయి",
+    "answer": "సమాధానం ఇవ్వలేదు.",
+    "language": "te",
+    "source": "ai4bharat/MSMARCO-XI (te)"
+  }
+]

@@ -1,0 +1,30 @@
+services:
+  - type: web
+    name: raggoa
+    runtime: node
+    region: singapore
+    plan: free
+    rootDir: .
+    buildCommand: npm install && npm install --prefix backend && npm install --prefix frontend && npm run build
+    startCommand: npm start
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 10000
+      - key: GEMINI_API_KEY
+        sync: false
+      - key: SARVAM_API_KEY
+        sync: false
+      - key: GEMINI_EMBEDDING_MODEL
+        value: gemini-embedding-2
+      - key: GEMINI_GENERATION_MODEL
+        value: gemini-3.5-flash
+      - key: DATASET_MODE
+        value: real
+      - key: MAX_REQUESTS_PER_WINDOW
+        value: 30
+      - key: RATE_LIMIT_WINDOW_MS
+        value: 60000
+    healthCheckPath: /api/health
+    autoDeploy: false

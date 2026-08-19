@@ -1,0 +1,394 @@
+{
+  "timestamp": "2026-08-18T07:47:02.260Z",
+  "groundedPath": {
+    "pathName": "msmarco_grounded (In-Corpus Dense Hybrid + Rerank + Grounded LLM)",
+    "percentiles": {
+      "p50": 1573,
+      "p70": 1850,
+      "p100": 1995,
+      "n": 15
+    },
+    "rawRuns": [
+      {
+        "id": "G-1",
+        "path": "msmarco_grounded",
+        "query": "what is a corporation?",
+        "lang": "en",
+        "status": "success",
+        "isGrounded": true,
+        "retrievalMs": 8.34,
+        "generationMs": 1044.06,
+        "pipelineTotalMs": 1054.38,
+        "wallClockMs": 1172
+      },
+      {
+        "id": "G-2",
+        "path": "msmarco_grounded",
+        "query": "why did rachel carson write silent spring",
+        "lang": "en",
+        "status": "success",
+        "isGrounded": true,
+        "retrievalMs": 8.17,
+        "generationMs": 783.95,
+        "pipelineTotalMs": 1839.06,
+        "wallClockMs": 1850
+      },
+      {
+        "id": "G-3",
+        "path": "msmarco_grounded",
+        "query": "corporation definition legal entity",
+        "lang": "en",
+        "status": "success",
+        "isGrounded": true,
+        "retrievalMs": 8.67,
+        "generationMs": 766.47,
+        "pipelineTotalMs": 1453.23,
+        "wallClockMs": 1463
+      },
+      {
+        "id": "G-4",
+        "path": "msmarco_grounded",
+        "query": "rachel carson obligation to endure pesticide",
+        "lang": "en",
+        "status": "success",
+        "isGrounded": true,
+        "retrievalMs": 9.51,
+        "generationMs": 801.39,
+        "pipelineTotalMs": 1467.93,
+        "wallClockMs": 1473
+      },
+      {
+        "id": "G-5",
+        "path": "msmarco_grounded",
+        "query": "कॉर्पोरेशन क्या है?",
+        "lang": "hi",
+        "status": "success",
+        "isGrounded": true,
+        "retrievalMs": 11.67,
+        "generationMs": 1244.7,
+        "pipelineTotalMs": 1257.45,
+        "wallClockMs": 1264
+      },
+      {
+        "id": "G-6",
+        "path": "msmarco_grounded",
+        "query": "रेचल कार्सन ने क्यों एक दायित्व बर्दाश्त करने के लिए लिखा",
+        "lang": "hi",
+        "status": "gemini_fallback",
+        "isGrounded": false,
+        "retrievalMs": 9.72,
+        "generationMs": 1125.55,
+        "pipelineTotalMs": 1135.87,
+        "wallClockMs": 1141
+      },
+      {
+        "id": "G-7",
+        "path": "msmarco_grounded",
+        "query": "कंपनी और निगम की कानूनी परिभाषा क्या है?",
+        "lang": "hi",
+        "status": "success",
+        "isGrounded": true,
+        "retrievalMs": 9.39,
+        "generationMs": 1263.32,
+        "pipelineTotalMs": 1855.48,
+        "wallClockMs": 1861
+      },
+      {
+        "id": "G-8",
+        "path": "msmarco_grounded",
+        "query": "कौवे और पक्षियों पर कीटनाशकों का प्रभाव",
+        "lang": "hi",
+        "status": "success",
+        "isGrounded": true,
+        "retrievalMs": 8.08,
+        "generationMs": 1053.84,
+        "pipelineTotalMs": 1989.6,
+        "wallClockMs": 1995
+      },
+      {
+        "id": "G-9",
+        "path": "msmarco_grounded",
+        "query": "ಕಾರ್ಪೊರೇಷನ್ ಎಂದರೇನು?",
+        "lang": "kn",
+        "status": "success",
+        "isGrounded": true,
+        "retrievalMs": 7.23,
+        "generationMs": 1110.27,
+        "pipelineTotalMs": 1666.08,
+        "wallClockMs": 1674
+      },
+      {
+        "id": "G-10",
+        "path": "msmarco_grounded",
+        "query": "ನಿಗಮ ಅಥವಾ ಕಂಪನಿಯ ಕಾನೂನು ವ್ಯಾಖ್ಯಾನ",
+        "lang": "kn",
+        "status": "success",
+        "isGrounded": true,
+        "retrievalMs": 6.15,
+        "generationMs": 1441.09,
+        "pipelineTotalMs": 1943.19,
+        "wallClockMs": 1949
+      },
+      {
+        "id": "G-11",
+        "path": "msmarco_grounded",
+        "query": "ರೇಚಲ್ ಕಾರ್ಸನ್ ಪರಿಸರ ಮಾಲಿನ್ಯ",
+        "lang": "kn",
+        "status": "success",
+        "isGrounded": true,
+        "retrievalMs": 7.08,
+        "generationMs": 1153.62,
+        "pipelineTotalMs": 1769.85,
+        "wallClockMs": 1774
+      },
+      {
+        "id": "G-12",
+        "path": "msmarco_grounded",
+        "query": "ஒரு நிறுவனம் என்பது என்ன?",
+        "lang": "ta",
+        "status": "success",
+        "isGrounded": true,
+        "retrievalMs": 9.97,
+        "generationMs": 1131.11,
+        "pipelineTotalMs": 1142.44,
+        "wallClockMs": 1146
+      },
+      {
+        "id": "G-13",
+        "path": "msmarco_grounded",
+        "query": "நிறுவனங்களின் சட்ட வரையறை",
+        "lang": "ta",
+        "status": "success",
+        "isGrounded": true,
+        "retrievalMs": 7.79,
+        "generationMs": 1444.49,
+        "pipelineTotalMs": 1968.94,
+        "wallClockMs": 1972
+      },
+      {
+        "id": "G-14",
+        "path": "msmarco_grounded",
+        "query": "ரshapeல் கார்சன் பூச்சிக்கொல்லி",
+        "lang": "ta",
+        "status": "success",
+        "isGrounded": true,
+        "retrievalMs": 8.01,
+        "generationMs": 918.6,
+        "pipelineTotalMs": 1569.11,
+        "wallClockMs": 1573
+      },
+      {
+        "id": "G-15",
+        "path": "msmarco_grounded",
+        "query": "కార్పొరేషన్ అంటే ఏమిటి?",
+        "lang": "te",
+        "status": "success",
+        "isGrounded": true,
+        "retrievalMs": 7.21,
+        "generationMs": 912.78,
+        "pipelineTotalMs": 920.99,
+        "wallClockMs": 925
+      }
+    ]
+  },
+  "fallbackPath": {
+    "pathName": "gemini_general (Out-of-Corpus Disclosed Gemini Direct)",
+    "percentiles": {
+      "p50": 1774,
+      "p70": 2790,
+      "p100": 10913,
+      "n": 15
+    },
+    "rawRuns": [
+      {
+        "id": "F-1",
+        "path": "gemini_general",
+        "query": "Who is India Prime Minister?",
+        "lang": "en",
+        "status": "gemini_fallback",
+        "isGrounded": false,
+        "retrievalMs": 8.17,
+        "generationMs": 822.94,
+        "pipelineTotalMs": 831.9,
+        "wallClockMs": 836
+      },
+      {
+        "id": "F-2",
+        "path": "gemini_general",
+        "query": "What is photosynthesis?",
+        "lang": "en",
+        "status": "gemini_fallback",
+        "isGrounded": false,
+        "retrievalMs": 10.97,
+        "generationMs": 803.05,
+        "pipelineTotalMs": 814.9,
+        "wallClockMs": 819
+      },
+      {
+        "id": "F-3",
+        "path": "gemini_general",
+        "query": "Who won the FIFA World Cup in 2022?",
+        "lang": "en",
+        "status": "gemini_fallback",
+        "isGrounded": false,
+        "retrievalMs": 7.37,
+        "generationMs": 931.99,
+        "pipelineTotalMs": 940.23,
+        "wallClockMs": 945
+      },
+      {
+        "id": "F-4",
+        "path": "gemini_general",
+        "query": "What is quantum computing?",
+        "lang": "en",
+        "status": "gemini_fallback",
+        "isGrounded": false,
+        "retrievalMs": 9.07,
+        "generationMs": 964.46,
+        "pipelineTotalMs": 1650.17,
+        "wallClockMs": 1654
+      },
+      {
+        "id": "F-5",
+        "path": "gemini_general",
+        "query": "How to bake sourdough bread from scratch?",
+        "lang": "en",
+        "status": "gemini_fallback",
+        "isGrounded": false,
+        "retrievalMs": 6.53,
+        "generationMs": 985.14,
+        "pipelineTotalMs": 1551.81,
+        "wallClockMs": 1556
+      },
+      {
+        "id": "F-6",
+        "path": "gemini_general",
+        "query": "What is the speed of light in vacuum?",
+        "lang": "en",
+        "status": "gemini_fallback",
+        "isGrounded": false,
+        "retrievalMs": 7.12,
+        "generationMs": 835.67,
+        "pipelineTotalMs": 1350.13,
+        "wallClockMs": 1355
+      },
+      {
+        "id": "F-7",
+        "path": "gemini_general",
+        "query": "Who wrote the play Romeo and Juliet?",
+        "lang": "en",
+        "status": "gemini_fallback",
+        "isGrounded": false,
+        "retrievalMs": 8.26,
+        "generationMs": 861.6,
+        "pipelineTotalMs": 2106.95,
+        "wallClockMs": 2111
+      },
+      {
+        "id": "F-8",
+        "path": "gemini_general",
+        "query": "What is the capital of Australia?",
+        "lang": "en",
+        "status": "gemini_fallback",
+        "isGrounded": false,
+        "retrievalMs": 6.86,
+        "generationMs": 1496.73,
+        "pipelineTotalMs": 2034.18,
+        "wallClockMs": 2039
+      },
+      {
+        "id": "F-9",
+        "path": "gemini_general",
+        "query": "How does the human digestive system work?",
+        "lang": "en",
+        "status": "gemini_fallback",
+        "isGrounded": false,
+        "retrievalMs": 6.8,
+        "generationMs": 1200.15,
+        "pipelineTotalMs": 1760.42,
+        "wallClockMs": 1765
+      },
+      {
+        "id": "F-10",
+        "path": "gemini_general",
+        "query": "What is the chemical formula for water?",
+        "lang": "en",
+        "status": "gemini_fallback",
+        "isGrounded": false,
+        "retrievalMs": 10.8,
+        "generationMs": 4834.51,
+        "pipelineTotalMs": 5540.67,
+        "wallClockMs": 5544
+      },
+      {
+        "id": "F-11",
+        "path": "gemini_general",
+        "query": "जापान की राजधानी क्या है?",
+        "lang": "hi",
+        "status": "gemini_fallback",
+        "isGrounded": false,
+        "retrievalMs": 9.01,
+        "generationMs": 10896.1,
+        "pipelineTotalMs": 10905.99,
+        "wallClockMs": 10913
+      },
+      {
+        "id": "F-12",
+        "path": "gemini_general",
+        "query": "सौरमंडल का सबसे बड़ा ग्रह कौन सा है?",
+        "lang": "hi",
+        "status": "success",
+        "isGrounded": true,
+        "retrievalMs": 13.14,
+        "generationMs": 914.78,
+        "pipelineTotalMs": 1766.82,
+        "wallClockMs": 1774
+      },
+      {
+        "id": "F-13",
+        "path": "gemini_general",
+        "query": "ಫ್ರಾನ್ಸ್‌ನ ರಾಜಧಾನಿ ಯಾವುದು?",
+        "lang": "kn",
+        "status": "gemini_fallback",
+        "isGrounded": false,
+        "retrievalMs": 8.43,
+        "generationMs": 5707.24,
+        "pipelineTotalMs": 6765.96,
+        "wallClockMs": 6769
+      },
+      {
+        "id": "F-14",
+        "path": "gemini_general",
+        "query": "ஒளிச்சேர்க்கை என்றால் என்ன?",
+        "lang": "ta",
+        "status": "gemini_fallback",
+        "isGrounded": false,
+        "retrievalMs": 8.55,
+        "generationMs": 2211.89,
+        "pipelineTotalMs": 2784.33,
+        "wallClockMs": 2790
+      },
+      {
+        "id": "F-15",
+        "path": "gemini_general",
+        "query": "చంద్రుడిపై మొదట అడుగుపెట్టిన వ్యక్తి ఎవరు?",
+        "lang": "te",
+        "status": "gemini_fallback",
+        "isGrounded": false,
+        "retrievalMs": 8.2,
+        "generationMs": 8288.36,
+        "pipelineTotalMs": 8865.66,
+        "wallClockMs": 8869
+      }
+    ]
+  },
+  "blendedOverall": {
+    "pathName": "Blended Overall (All 30 Executed Queries)",
+    "percentiles": {
+      "p50": 1765,
+      "p70": 1972,
+      "p100": 10913,
+      "n": 30
+    }
+  }
+}

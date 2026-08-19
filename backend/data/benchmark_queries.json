@@ -1,0 +1,38 @@
+[
+  {
+    "query": "ताजमहल कहाँ स्थित है?",
+    "expectedGrounded": true
+  },
+  {
+    "query": "भारत की राजधानी क्या है?",
+    "expectedGrounded": true
+  },
+  {
+    "query": "सूर्य ग्रहण कब और क्यों होता है?",
+    "expectedGrounded": true
+  },
+  {
+    "query": "प्रकाश संश्लेषण प्रक्रिया क्या है?",
+    "expectedGrounded": true
+  },
+  {
+    "query": "कंप्यूटर का आविष्कार किसने किया?",
+    "expectedGrounded": true
+  },
+  {
+    "query": "जापान की राजधानी क्या है?",
+    "expectedGrounded": false
+  },
+  {
+    "query": "क्रिस्टियानो रोनाल्डो कौन है?",
+    "expectedGrounded": false
+  },
+  {
+    "query": "First war that happened in India",
+    "expectedGrounded": false
+  },
+  {
+    "query": "",
+    "expectedGrounded": false
+  }
+]

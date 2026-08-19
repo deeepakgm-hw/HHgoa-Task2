@@ -1,0 +1,25 @@
+{
+  "name": "voice-rag-pipeline",
+  "version": "1.0.0",
+  "description": "Voice-Enabled RAG Pipeline for Hacker House Goa 2026",
+  "scripts": {
+    "install:all": "npm install && npm install --prefix backend && npm install --prefix frontend",
+    "dev:backend": "npm run dev --prefix backend",
+    "dev:frontend": "npm run dev --prefix frontend",
+    "dev": "concurrently \"npm run dev:backend\" \"npm run dev:frontend\"",
+    "build:backend": "npm run build --prefix backend",
+    "build:frontend": "npm run build --prefix frontend",
+    "build": "npm run build:backend && npm run build:frontend",
+    "start": "node backend/dist/server.js",
+    "test": "npm run test --prefix backend",
+    "benchmark": "npm run benchmark:mock --prefix backend",
+    "benchmark:mock": "npm run benchmark:mock --prefix backend",
+    "benchmark:live": "npm run benchmark:live --prefix backend",
+    "benchmark:voice": "npm run benchmark:voice --prefix backend",
+    "verify-chunking": "npm run verify-chunking --prefix backend",
+    "ingest": "npm run ingest --prefix backend"
+  },
+  "devDependencies": {
+    "concurrently": "^8.2.2"
+  }
+}

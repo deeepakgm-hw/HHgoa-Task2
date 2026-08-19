@@ -1,0 +1,800 @@
+/* ==========================================================================
+   RAGGOA — COHESIVE PURPLE/INDIGO GRADIENT DESIGN SYSTEM (ALL SCREENS)
+   ========================================================================== */
+
+@import url('https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=JetBrains+Mono:wght@400;500;600;700&family=Noto+Sans+Devanagari:wght@400;600;700&family=Noto+Sans+Kannada:wght@400;600;700&family=Noto+Sans+Tamil:wght@400;600;700&family=Noto+Sans+Telugu:wght@400;600;700&display=swap');
+
+:root {
+  /* Gradient Master Background */
+  --bg-gradient-top: #6C5CE7;
+  --bg-gradient-bottom: #4A63E7;
+  --bg-gradient: linear-gradient(135deg, var(--bg-gradient-top) 0%, var(--bg-gradient-bottom) 100%);
+
+  /* Primary Action Button Surface & Core */
+  --surface-white: #FFFFFF;
+  --button-core-gradient: linear-gradient(135deg, #7C6EF0 0%, #4A63E7 100%);
+  --button-shadow: 0 24px 48px rgba(0, 0, 0, 0.18);
+  --button-shadow-hover: 0 30px 60px rgba(0, 0, 0, 0.25);
+
+  /* High Contrast Text on Gradient (WCAG AA Compliant >= 4.5:1) */
+  --text-primary: #FFFFFF;                  /* 100% white: Contrast ~5.5:1 against #6C5CE7 */
+  --text-secondary: rgba(255, 255, 255, 0.88);
+  --text-tertiary: rgba(255, 255, 255, 0.72);
+  --text-muted: rgba(255, 255, 255, 0.55);
+
+  /* Translucent Glass Surfaces */
+  --card-glass: rgba(255, 255, 255, 0.14);
+  --card-glass-hover: rgba(255, 255, 255, 0.20);
+  --card-glass-border: rgba(255, 255, 255, 0.24);
+  --card-glass-shadow: 0 16px 36px rgba(0, 0, 0, 0.12);
+
+  /* Accents & States */
+  --badge-bg: rgba(255, 255, 255, 0.16);
+  --badge-border: rgba(255, 255, 255, 0.28);
+  --accent-gold: #FCD34D;
+  --accent-green: #34D399;
+  --accent-refusal: #FFA39E;
+  --accent-refusal-bg: rgba(239, 68, 68, 0.18);
+  --accent-refusal-border: rgba(255, 163, 158, 0.4);
+
+  /* Typography */
+  --font-display: 'Poppins', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-mono: 'JetBrains Mono', monospace;
+
+  /* Native Indic Typefaces */
+  --font-hi: 'Noto Sans Devanagari', var(--font-display);
+  --font-kn: 'Noto Sans Kannada', var(--font-display);
+  --font-ta: 'Noto Sans Tamil', var(--font-display);
+  --font-te: 'Noto Sans Telugu', var(--font-display);
+}
+
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html, body {
+  width: 100%;
+  min-height: 100%;
+  background: var(--bg-gradient);
+  background-attachment: fixed;
+  color: var(--text-primary);
+  font-family: var(--font-display);
+  font-size: 16px;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  overflow-x: hidden;
+}
+
+/* Full Bleed App Canvas */
+.wellness-app-canvas {
+  min-height: 100vh;
+  width: 100%;
+  background: var(--bg-gradient);
+  background-attachment: fixed;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  overflow-y: auto;
+}
+
+/* Accessible focus outline */
+:focus-visible {
+  outline: 2px solid #FFFFFF;
+  outline-offset: 3px;
+}
+
+/* ==========================================================================
+   TOP NAVIGATION HEADER (3-WAY SEGMENTED PILL + CONTROLS)
+   ========================================================================== */
+.wellness-top-bar {
+  width: 100%;
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 1.5rem 1.5rem 1rem 1.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  z-index: 50;
+}
+
+.top-bar-brand {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 1.35rem;
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  color: #FFFFFF;
+  cursor: pointer;
+  user-select: none;
+}
+
+/* 3-Way Segmented Navigation Pill */
+.nav-segmented-pill-container {
+  display: flex;
+  background: rgba(0, 0, 0, 0.18);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  border-radius: 9999px;
+  padding: 3px;
+  gap: 3px;
+}
+
+.nav-tab-btn {
+  background: transparent;
+  border: none;
+  color: rgba(255, 255, 255, 0.88);
+  font-family: var(--font-display);
+  font-size: 0.82rem;
+  font-weight: 600;
+  padding: 0.4rem 0.95rem;
+  border-radius: 9999px;
+  cursor: pointer;
+  transition: all 0.18s cubic-bezier(0.16, 1, 0.3, 1);
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  user-select: none;
+}
+
+.nav-tab-btn:hover {
+  color: #FFFFFF;
+  background: rgba(255, 255, 255, 0.12);
+}
+
+.nav-tab-btn.active {
+  background: #FFFFFF;
+  color: #4A63E7;
+  font-weight: 700;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+/* Top Bar Right Meta */
+.top-bar-meta {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.live-status-pill {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.74rem;
+  font-weight: 600;
+  padding: 0.3rem 0.75rem;
+  border-radius: 9999px;
+  background: rgba(255, 255, 255, 0.16);
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  color: #FFFFFF;
+  backdrop-filter: blur(8px);
+}
+
+.status-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--accent-green);
+  box-shadow: 0 0 8px var(--accent-green);
+}
+
+.lang-selector-group {
+  display: flex;
+  background: rgba(0, 0, 0, 0.18);
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  border-radius: 9999px;
+  padding: 3px;
+  gap: 2px;
+}
+
+.lang-chip-btn {
+  background: transparent;
+  border: none;
+  color: rgba(255, 255, 255, 0.85);
+  font-family: var(--font-display);
+  font-size: 0.74rem;
+  font-weight: 600;
+  padding: 0.3rem 0.6rem;
+  border-radius: 9999px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.lang-chip-btn:hover {
+  color: #FFFFFF;
+  background: rgba(255, 255, 255, 0.12);
+}
+
+.lang-chip-btn.active {
+  background: #FFFFFF;
+  color: #4A63E7;
+  font-weight: 700;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+}
+
+/* ==========================================================================
+   PRIMARY SCREEN: ASK (WELLNESS VOICE & EVIDENCE HERO)
+   ========================================================================== */
+.wellness-main-stage {
+  flex: 1;
+  max-width: 640px;
+  width: 100%;
+  margin: 0 auto;
+  padding: 2rem 1.5rem 4rem 1.5rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  gap: 1.8rem;
+  z-index: 10;
+}
+
+.wellness-hero-text {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.6rem;
+}
+
+.wellness-headline {
+  font-size: 2.85rem;
+  font-weight: 700;
+  line-height: 1.15;
+  letter-spacing: -0.03em;
+  color: var(--text-primary);
+}
+
+.wellness-subtitle {
+  font-size: 1.05rem;
+  font-weight: 400;
+  color: var(--text-secondary);
+  max-width: 480px;
+  line-height: 1.5;
+}
+
+.wellness-badge-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  background: var(--badge-bg);
+  border: 1px solid var(--badge-border);
+  padding: 0.4rem 1.1rem;
+  border-radius: 9999px;
+  font-size: 0.82rem;
+  font-weight: 500;
+  color: var(--text-primary);
+  backdrop-filter: blur(10px);
+}
+
+.badge-sparkle {
+  color: var(--accent-gold);
+}
+
+/* Live Waveform Container */
+.wellness-waveform-container {
+  height: 64px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  width: 100%;
+  max-width: 380px;
+  padding: 0 1rem;
+}
+
+.waveform-bar {
+  width: 4px;
+  background: #FFFFFF;
+  border-radius: 9999px;
+  opacity: 0.85;
+  transition: height 0.08s ease, opacity 0.15s ease;
+}
+
+.waveform-bar.listening {
+  opacity: 1;
+  box-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+}
+
+/* Big Circular Primary Action Button */
+.wellness-primary-button-wrap {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.1rem;
+  user-select: none;
+}
+
+.wellness-outer-circle {
+  width: 220px;
+  height: 220px;
+  border-radius: 50%;
+  background: var(--surface-white);
+  box-shadow: var(--button-shadow);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  border: none;
+  outline: none;
+}
+
+.wellness-outer-circle:hover {
+  transform: translateY(-4px) scale(1.02);
+  box-shadow: var(--button-shadow-hover);
+}
+
+.wellness-outer-circle:active {
+  transform: translateY(0) scale(0.98);
+}
+
+.wellness-outer-circle.disabled {
+  opacity: 0.75;
+  cursor: wait;
+  transform: none;
+}
+
+.wellness-inner-core {
+  width: 154px;
+  height: 154px;
+  border-radius: 50%;
+  background: var(--button-core-gradient);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #FFFFFF;
+  box-shadow: inset 0 2px 4px rgba(255, 255, 255, 0.25), 0 8px 16px rgba(74, 99, 231, 0.3);
+}
+
+.button-state-caption {
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  letter-spacing: -0.01em;
+}
+
+/* Or Divider between Mic and Text Input */
+.or-divider {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  max-width: 480px;
+  margin: -0.2rem 0;
+  gap: 0.85rem;
+}
+
+.or-line {
+  flex: 1;
+  height: 1px;
+  background: rgba(255, 255, 255, 0.28);
+}
+
+.or-text {
+  font-size: 0.84rem;
+  font-weight: 500;
+  color: rgba(255, 255, 255, 0.8);
+  text-transform: lowercase;
+  letter-spacing: 0.04em;
+}
+
+/* Command Bar (Text Input) */
+.wellness-command-bar {
+  width: 100%;
+  max-width: 480px;
+  display: flex;
+  align-items: center;
+  background: rgba(255, 255, 255, 0.94);
+  backdrop-filter: blur(20px);
+  border: 1.5px solid rgba(255, 255, 255, 0.6);
+  border-radius: 9999px;
+  padding: 0.38rem 0.45rem 0.38rem 1.25rem;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12), 0 2px 8px rgba(74, 99, 231, 0.15);
+  transition: all 0.2s ease;
+}
+
+.wellness-command-bar:focus-within {
+  background: #FFFFFF;
+  border-color: #6C5CE7;
+  box-shadow: 0 10px 35px rgba(0, 0, 0, 0.18), 0 0 0 3.5px rgba(108, 92, 231, 0.25);
+}
+
+.command-input-field {
+  flex: 1;
+  background: transparent;
+  border: none;
+  color: #2D1B69;
+  font-family: var(--font-body);
+  font-size: 0.96rem;
+  font-weight: 500;
+  outline: none;
+}
+
+.command-input-field::placeholder {
+  color: #8B7FB8;
+  font-weight: 400;
+}
+
+.command-submit-circle {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  background: var(--button-core-gradient);
+  border: none;
+  color: #FFFFFF;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: transform 0.15s ease, opacity 0.15s ease;
+  box-shadow: 0 3px 8px rgba(74, 99, 231, 0.35);
+}
+
+.command-submit-circle:hover:not(:disabled) {
+  transform: scale(1.08);
+}
+
+.command-submit-circle:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+/* Grounded Answer Card / Refusal Panel */
+.wellness-answer-card {
+  width: 100%;
+  max-width: 540px;
+  background: var(--card-glass);
+  backdrop-filter: blur(20px);
+  border: 1px solid var(--card-glass-border);
+  border-radius: 24px;
+  padding: 1.75rem;
+  text-align: left;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  animation: slideUp 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  box-shadow: var(--card-glass-shadow);
+}
+
+@keyframes slideUp {
+  from { opacity: 0; transform: translateY(12px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.answer-card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.88);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.16);
+  padding-bottom: 0.65rem;
+}
+
+.answer-badge-grounded {
+  color: #A7F3D0;
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-weight: 700;
+}
+
+.answer-badge-refused {
+  color: var(--accent-refusal);
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-weight: 700;
+}
+
+.answer-spoken-query {
+  font-size: 0.95rem;
+  font-weight: 500;
+  color: rgba(255, 255, 255, 0.75);
+  font-style: italic;
+}
+
+.answer-body-prose {
+  font-size: 1.25rem;
+  line-height: 1.55;
+  color: #FFFFFF;
+  font-weight: 500;
+}
+
+.answer-citation-snippet {
+  background: rgba(0, 0, 0, 0.16);
+  border-left: 3px solid #34D399;
+  border-radius: 0 10px 10px 0;
+  padding: 0.85rem 1rem;
+  font-size: 0.82rem;
+  color: rgba(255, 255, 255, 0.88);
+  line-height: 1.5;
+}
+
+.wellness-sample-pills {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.5rem;
+  max-width: 540px;
+}
+
+.sample-pill-btn {
+  background: rgba(255, 255, 255, 0.12);
+  border: 1px solid rgba(255, 255, 255, 0.20);
+  border-radius: 9999px;
+  color: rgba(255, 255, 255, 0.88);
+  font-size: 0.78rem;
+  font-weight: 500;
+  padding: 0.35rem 0.85rem;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.sample-pill-btn:hover {
+  background: rgba(255, 255, 255, 0.24);
+  color: #FFFFFF;
+}
+
+.sample-pill-btn.refusal {
+  border-color: var(--accent-refusal-border);
+  color: var(--accent-refusal);
+}
+
+/* ==========================================================================
+   OBSERVABILITY SCREEN (COHESIVE PURPLE GLASS SYSTEM)
+   ========================================================================== */
+.wellness-section-container {
+  max-width: 1000px;
+  width: 100%;
+  margin: 0 auto;
+  padding: 2.5rem 1.5rem 5rem 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 2.5rem;
+}
+
+.wellness-section-header {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+  text-align: left;
+}
+
+.wellness-section-title {
+  font-size: 2.5rem;
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  color: #FFFFFF;
+}
+
+.wellness-section-subtitle {
+  font-size: 1.05rem;
+  color: var(--text-secondary);
+  max-width: 680px;
+  line-height: 1.6;
+}
+
+.wellness-glass-panel {
+  background: var(--card-glass);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid var(--card-glass-border);
+  border-radius: 24px;
+  padding: 2rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  box-shadow: var(--card-glass-shadow);
+}
+
+.glass-panel-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+}
+
+.glass-panel-title {
+  font-size: 0.88rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  color: #FFFFFF;
+  text-transform: uppercase;
+}
+
+/* Proportional Latency Segmented Ruler */
+.glass-timeline-track {
+  height: 32px;
+  background: rgba(0, 0, 0, 0.25);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 9999px;
+  display: flex;
+  overflow: hidden;
+}
+
+.timeline-segment-item {
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: #000000;
+}
+
+.timeline-segment-item.stt { background: #7DD3FC; }
+.timeline-segment-item.retrieval { background: var(--accent-gold); }
+.timeline-segment-item.gen { background: #FB923C; }
+.timeline-segment-item.norm { background: #C084FC; }
+
+/* 4-Card Latency Grid */
+.metrics-glass-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 1.25rem;
+}
+
+.metric-glass-card {
+  background: rgba(255, 255, 255, 0.10);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  border-radius: 16px;
+  padding: 1.25rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.metric-card-label {
+  font-size: 0.74rem;
+  font-weight: 700;
+  color: var(--text-tertiary);
+  letter-spacing: 0.06em;
+}
+
+.metric-card-value {
+  font-family: var(--font-mono);
+  font-size: 1.85rem;
+  font-weight: 800;
+  color: #FFFFFF;
+}
+
+.metric-card-meta {
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  color: var(--text-secondary);
+}
+
+/* Benchmark Trigger Action Button */
+.btn-glass-action {
+  background: #FFFFFF;
+  border: none;
+  color: #4A63E7;
+  font-family: var(--font-display);
+  font-size: 0.88rem;
+  font-weight: 700;
+  padding: 0.75rem 1.5rem;
+  border-radius: 9999px;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+  width: fit-content;
+}
+
+.btn-glass-action:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.22);
+}
+
+.btn-glass-action:disabled {
+  opacity: 0.6;
+  cursor: wait;
+}
+
+/* ==========================================================================
+   ARCHITECTURE SCREEN (COHESIVE PURPLE GLASS SYSTEM)
+   ========================================================================== */
+.arch-stage-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+}
+
+.arch-stage-card {
+  background: var(--card-glass);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid var(--card-glass-border);
+  border-radius: 18px;
+  padding: 1.35rem 1.75rem;
+  display: flex;
+  align-items: stretch;
+  gap: 1.5rem;
+  transition: background 0.15s ease, transform 0.15s ease;
+}
+
+.arch-stage-card:hover {
+  background: var(--card-glass-hover);
+  transform: translateY(-2px);
+}
+
+.arch-stage-num {
+  font-family: var(--font-mono);
+  font-size: 1.5rem;
+  font-weight: 800;
+  color: var(--accent-gold);
+  min-width: 42px;
+}
+
+.arch-stage-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  text-align: left;
+}
+
+.arch-stage-header-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+}
+
+.arch-stage-name {
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: #FFFFFF;
+}
+
+.arch-stage-latency {
+  font-family: var(--font-mono);
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: var(--accent-gold);
+  background: rgba(252, 211, 77, 0.15);
+  border: 1px solid rgba(252, 211, 77, 0.3);
+  padding: 0.15rem 0.55rem;
+  border-radius: 9999px;
+}
+
+.arch-stage-tech {
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.85);
+}
+
+.arch-stage-desc {
+  font-size: 0.88rem;
+  color: var(--text-secondary);
+  line-height: 1.5;
+}
+
+.arch-stage-invariant {
+  font-size: 0.76rem;
+  color: var(--text-tertiary);
+  margin-top: 0.2rem;
+}
+
+/* Indic Script Font Classes */
+.indic-hi { font-family: var(--font-hi); }
+.indic-kn { font-family: var(--font-kn); }
+.indic-ta { font-family: var(--font-ta); }
+.indic-te { font-family: var(--font-te); }
+
+/* Responsive adjustments */
+@media (max-width: 800px) {
+  .wellness-top-bar { flex-direction: column; gap: 0.75rem; }
+  .wellness-section-title { font-size: 2rem; }
+  .wellness-headline { font-size: 2.2rem; }
+  .wellness-outer-circle { width: 180px; height: 180px; }
+  .wellness-inner-core { width: 124px; height: 124px; }
+  .arch-stage-card { flex-direction: column; gap: 0.5rem; }
+}

@@ -1,0 +1,76 @@
+# Dependencies
+node_modules/
+.pnp
+.pnp.js
+
+# Testing
+coverage/
+
+# Production Build Outputs
+dist/
+build/
+
+# Local Vector Database & Cache Files
+# NOTE: vector_store.json and embeddings_cache.json are committed intentionally.
+# They contain the pre-built Indic RAG index needed for production deployment.
+# Regenerating them requires expensive Gemini API calls (ingest pipeline).
+backend/data/ingestion_report.json
+backend/data/benchmark_report.json
+
+# Environment Secrets
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# Large Raw Datasets
+backend/data/msmarco-xi/raw/
+*.parquet
+*.backup.json
+
+# Generated RAG/vector artifacts
+backend/data/hnsw_vectors.bin
+backend/data/hnsw_index.json
+backend/data/vector_store.json
+backend/data/embeddings_cache.json
+backend/data/backups/
+
+# Large raw/processed datasets
+backend/data/msmarco-xi/raw/
+backend/data/msmarco-xi/processed/
+
+# Generated benchmark/cache artifacts if large
+backend/data/*.cache
+# RAG generated vector/index artifacts
+backend/data/vector_store.json
+backend/data/hnsw_vectors.bin
+backend/data/hnsw_index.json
+backend/data/embeddings_cache.json
+backend/data/backups/
+
+# Dataset files
+backend/data/msmarco-xi/raw/
+backend/data/msmarco-xi/processed/
+
+# Other generated data
+backend/data/*.bin
+backend/data/*.bak
+
+# ============================================
+# RAG GENERATED ARTIFACTS - NEVER COMMIT
+# ============================================
+
+backend/data/vector_store.json
+backend/data/hnsw_vectors.bin
+backend/data/hnsw_index.json
+backend/data/embeddings_cache.json
+
+backend/data/backups/
+backend/data/msmarco-xi/checkpoints/
+
+# Raw downloaded dataset
+backend/data/msmarco-xi/raw/
+
+# Generated dataset processing artifacts
+backend/data/msmarco-xi/processed/
