@@ -1,46 +1,56 @@
 import * as fs from 'fs';
 import * as path from 'path';
 import * as crypto from 'crypto';
-import { GoogleGenAI } from '@google/genai';
 import * as dotenv from 'dotenv';
 
 dotenv.config();
 
 export class EmbeddingService {
-  private ai: any = null;
-  private useMock: boolean = false;
-  private dimension: number = 3072; // gemini-embedding-2 standard dimension
-  private modelName: string;
+  private dimension: number = 384; // Xenova/multilingual-e5-small native dimension
+  private modelName: string = 'Xenova/multilingual-e5-small';
   private cachePath: string;
   private cache: Record<string, number[]> = {};
   private cacheUpdated: boolean = false;
+  private pipelinePromise: Promise<any> | null = null;
+  private isPipelineReady: boolean = false;
 
-  constructor(modelName: string = process.env.GEMINI_EMBEDDING_MODEL || 'gemini-embedding-2', cachePath?: string, forceMock: boolean = false) {
-    this.modelName = modelName;
-    
-    // Setup file-based cache path
+  constructor(modelName?: string, cachePath?: string, forceMock: boolean = false) {
+    if (modelName) this.modelName = modelName;
     this.cachePath = cachePath || path.join(__dirname, '..', '..', 'data', 'embeddings_cache.json');
     this.loadCache();
-    const apiKey = process.env.GEMINI_API_KEY;
-    if (forceMock || !apiKey || apiKey.startsWith('your_')) {
-      if (forceMock) {
-        console.log("EmbeddingService: Mock mode FORCED by constructor.");
-      } else {
-        console.warn("GEMINI_API_KEY is not set or placeholder is used. Running EmbeddingService in MOCK mode.");
-      }
-      this.useMock = true;
+
+    if (!forceMock) {
+      this.initPipeline();
     } else {
-      try {
-        this.ai = new GoogleGenAI({ apiKey });
-      } catch (err) {
-        console.error("Failed to initialize GoogleGenAI client, fallback to MOCK mode.", err);
-        this.useMock = true;
-      }
+      console.log("EmbeddingService: Running in forced mock mode.");
     }
   }
 
-  getModelName(): string {
+  private initPipeline(): Promise<any> {
+    if (!this.pipelinePromise) {
+      this.pipelinePromise = (async () => {
+        try {
+          const { pipeline } = await import('@xenova/transformers');
+          const extractor = await pipeline('feature-extraction', this.modelName, {
+            quantized: true
+          });
+          this.isPipelineReady = true;
+          return extractor;
+        } catch (err) {
+          console.error(`Failed to load local embedding pipeline ${this.modelName}:`, err);
+          return null;
+        }
+      })();
+    }
+    return this.pipelinePromise;
+  }
+
+  public getModelName(): string {
     return this.modelName;
+  }
+
+  public getDimension(): number {
+    return this.dimension;
   }
 
   /**
@@ -77,12 +87,12 @@ export class EmbeddingService {
   /**
    * Creates a SHA-256 hash of the input text to serve as the cache lookup key.
    */
-  private getHash(text: string): string {
-    return crypto.createHash('sha256').update(text).digest('hex');
+  private getHash(key: string): string {
+    return crypto.createHash('sha256').update(key).digest('hex');
   }
 
   /**
-   * Deterministically generate a mock embedding unit vector based on text hashing.
+   * Deterministically generate a fallback unit vector if neural pipeline is unavailable.
    */
   public generateMockEmbedding(text: string): number[] {
     const vector = new Array(this.dimension).fill(0);
@@ -96,7 +106,6 @@ export class EmbeddingService {
       vector[i] = val - Math.floor(val) - 0.5;
     }
 
-    // Normalize to unit length (L2 normalization)
     let sumSquares = 0;
     for (let i = 0; i < this.dimension; i++) {
       sumSquares += vector[i] * vector[i];
@@ -111,65 +120,59 @@ export class EmbeddingService {
   }
 
   /**
-   * Generates a 3072-dimensional embedding vector for the input text. Checks local cache first.
+   * Generates a 384-dimensional embedding vector for the input text. Checks local cache first.
    */
-  async embedText(text: string): Promise<number[]> {
+  async embedText(text: string, isQuery: boolean = true): Promise<number[]> {
     if (!text || text.trim().length === 0) {
       return this.generateMockEmbedding("");
     }
 
-    const hash = this.getHash(text);
+    const cacheKey = `${isQuery ? 'q:' : 'p:'}${text}`;
+    const hash = this.getHash(cacheKey);
     if (this.cache[hash]) {
       return this.cache[hash];
     }
 
     let embedding: number[];
-    if (this.useMock) {
-      embedding = this.generateMockEmbedding(text);
-    } else {
-      try {
-        const response = await this.ai.models.embedContent({
-          model: this.modelName,
-          contents: text
-        });
-        
-        if (response && response.embeddings && response.embeddings[0] && response.embeddings[0].values) {
-          embedding = response.embeddings[0].values;
-        } else if (response && response.embedding && response.embedding.values) {
-          embedding = response.embedding.values;
-        } else {
-          throw new Error("Invalid embedding response format");
-        }
-      } catch (error) {
-        console.error(`Gemini embedding error for text "${text.substring(0, 30)}...":`, error);
+    try {
+      const extractor = await this.initPipeline();
+      if (extractor) {
+        const input = (isQuery ? 'query: ' : 'passage: ') + text;
+        const output = await extractor(input, { pooling: 'mean', normalize: true });
+        embedding = Array.from(output.data);
+      } else {
         embedding = this.generateMockEmbedding(text);
       }
+    } catch (error) {
+      console.error(`Local embedding inference error for text "${text.substring(0, 30)}...":`, error);
+      embedding = this.generateMockEmbedding(text);
     }
 
     this.cache[hash] = embedding;
     this.cacheUpdated = true;
-    if (Object.keys(this.cache).length < 200) {
+    if (Object.keys(this.cache).length % 100 === 0) {
       this.saveCache();
     }
     return embedding;
   }
 
   /**
-   * Batch embeds multiple texts using client-side batch calls, checking cache first.
+   * Batch embeds multiple texts using local transformer pipeline, checking cache first.
    */
-  async embedBatch(texts: string[]): Promise<number[][]> {
+  async embedBatch(texts: string[], isQuery: boolean = false): Promise<number[][]> {
     const results: number[][] = new Array(texts.length);
     const uncachedIndices: number[] = [];
     const uncachedTexts: string[] = [];
 
-    // Check cache
+    // 1. Check cache
     for (let i = 0; i < texts.length; i++) {
       const text = texts[i];
       if (!text || text.trim().length === 0) {
         results[i] = this.generateMockEmbedding("");
         continue;
       }
-      const hash = this.getHash(text);
+      const cacheKey = `${isQuery ? 'q:' : 'p:'}${text}`;
+      const hash = this.getHash(cacheKey);
       if (this.cache[hash]) {
         results[i] = this.cache[hash];
       } else {
@@ -182,45 +185,26 @@ export class EmbeddingService {
       return results;
     }
 
-    let newEmbeddings: number[][] = [];
-    if (this.useMock) {
-      newEmbeddings = uncachedTexts.map(t => this.generateMockEmbedding(t));
-    } else {
-      try {
-        // Run concurrent single embedding requests in batches of 10 to avoid hitting limits
-        const batchSize = 10;
-        for (let i = 0; i < uncachedTexts.length; i += batchSize) {
-          const chunk = uncachedTexts.slice(i, i + batchSize);
-          const promises = chunk.map(text => 
-            this.ai.models.embedContent({
-              model: this.modelName,
-              contents: text
-            }).then((res: any) => {
-              if (res && res.embeddings && res.embeddings[0] && res.embeddings[0].values) {
-                return res.embeddings[0].values;
-              } else if (res && res.embedding && res.embedding.values) {
-                return res.embedding.values;
-              } else {
-                return this.generateMockEmbedding(text);
-              }
-            }).catch(() => this.generateMockEmbedding(text))
-          );
-          const chunkResults = await Promise.all(promises);
-          newEmbeddings.push(...chunkResults);
-        }
-      } catch (error) {
-        console.error("Batch embedding API error, falling back to mock:", error);
-        newEmbeddings = uncachedTexts.map(t => this.generateMockEmbedding(t));
-      }
-    }
-
-    // Map new embeddings back to result index and update cache
-    for (let i = 0; i < uncachedIndices.length; i++) {
+    // 2. Compute embeddings for uncached texts
+    const extractor = await this.initPipeline();
+    for (let i = 0; i < uncachedTexts.length; i++) {
       const origIdx = uncachedIndices[i];
       const text = uncachedTexts[i];
-      const embedding = newEmbeddings[i];
-      const hash = this.getHash(text);
+      let embedding: number[];
+      try {
+        if (extractor) {
+          const input = (isQuery ? 'query: ' : 'passage: ') + text;
+          const output = await extractor(input, { pooling: 'mean', normalize: true });
+          embedding = Array.from(output.data);
+        } else {
+          embedding = this.generateMockEmbedding(text);
+        }
+      } catch (err) {
+        embedding = this.generateMockEmbedding(text);
+      }
 
+      const cacheKey = `${isQuery ? 'q:' : 'p:'}${text}`;
+      const hash = this.getHash(cacheKey);
       this.cache[hash] = embedding;
       results[origIdx] = embedding;
     }

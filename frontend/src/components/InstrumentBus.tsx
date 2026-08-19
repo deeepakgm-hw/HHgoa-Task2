@@ -30,19 +30,19 @@ export default function InstrumentBus() {
     {
       num: '04',
       title: 'Dense Vector Embedding',
-      scope: 'REMOTE / CACHE',
-      tech: 'gemini-embedding-2 (3072 Dimensions) + SHA-256 Memory Cache',
-      latency: '280ms (uncached) / <0.1ms (cached)',
-      desc: 'Produces L2-normalized 3072-dimensional vector representations for cosine similarity matching. Persistent SHA-256 cache prevents duplicate API calls.',
-      failure: 'Cache hit allows instant sub-millisecond retrieval without remote network call.'
+      scope: 'LOCAL IN-PROCESS',
+      tech: 'Xenova/multilingual-e5-small (384 Dimensions) + SHA-256 Memory Cache',
+      latency: '~19.6ms / <0.1ms (cached)',
+      desc: 'Produces L2-normalized 384-dimensional dense semantic vectors using a local in-process multilingual ONNX transformer model with persistent SHA-256 disk caching.',
+      failure: 'Cache hit allows instant sub-millisecond retrieval without re-computation.'
     },
     {
       num: '05',
       title: 'Multilingual Hybrid Retrieval',
       scope: 'LOCAL IN-MEMORY',
       tech: 'Dense Cosine (0.75) + Multilingual BM25 Lexical (0.25)',
-      latency: '8.40 ms P50 (3,381 Chunks)',
-      desc: 'Executes fused hybrid vector search across 3,381 indexed passage chunks in 5 languages. Language-partitioned indices eliminate cross-lingual pollution.',
+      latency: '< 90 ms P50 (84,667 Chunks)',
+      desc: 'Executes fused hybrid vector search across 84,667 indexed passage chunks in 5 Indic languages. Language-partitioned HNSW indices eliminate cross-lingual pollution.',
       failure: 'Zero matches immediately trigger safe refusal without calling Gemini.'
     },
     {

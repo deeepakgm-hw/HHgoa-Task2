@@ -15,7 +15,7 @@ async function benchmarkRecallDirect() {
   await vectorDb.loadFromFileAsync(vsPath);
   console.log(`Loaded ${vectorDb.size().toLocaleString()} chunks into in-memory vector store.`);
 
-  const embedService = new EmbeddingService(undefined, undefined, true);
+  const embedService = new EmbeddingService();
   const retrievalService = new RetrievalService(vectorDb);
 
   const chunks = vectorDb.getAllChunks();

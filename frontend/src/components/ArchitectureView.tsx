@@ -61,15 +61,15 @@ export default function ArchitectureView() {
       step: '04',
       name: 'Dense Vector Embedding',
       category: 'LOCAL IN-MEMORY',
-      technology: 'gemini-embedding-2 (3072 dims) + SHA-256 Cache',
-      latency: '~280ms (uncached) / <0.1ms (cached)',
-      description: 'Generates unit-normalized 3072-dimensional embedding representations for semantic matching with persistent disk caching.',
+      technology: 'Xenova/multilingual-e5-small (384 dims)',
+      latency: '~19.6ms / <0.1ms (cached)',
+      description: 'Generates unit-normalized 384-dimensional dense semantic embeddings using an in-process multilingual ONNX transformer model with persistent SHA-256 caching.',
       details: [
-        '3072-dimensional vector space',
-        'L2 unit normalization for exact dot-product cosine similarity',
-        'SHA-256 query cache eliminating redundant network requests'
+        'Model: Xenova/multilingual-e5-small (8-bit Quantized ONNX)',
+        '384-dimensional native vector space with zero API cost/rate limits',
+        'L2 unit normalization with SHA-256 disk cache for instant reuse'
       ],
-      color: '#6366f1'
+      color: '#ec4899'
     },
     {
       step: '05',

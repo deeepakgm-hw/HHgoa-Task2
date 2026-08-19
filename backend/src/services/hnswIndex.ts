@@ -32,7 +32,7 @@ export class HNSWVectorIndex {
   }> = new Map();
 
   constructor(
-    dimension: number = 3072,
+    dimension: number = 384,
     M: number = 16,
     efConstruction: number = 64,
     efSearch: number = 32

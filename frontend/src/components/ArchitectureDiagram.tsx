@@ -32,10 +32,10 @@ const architectureStages: Record<string, StageDetails> = {
   },
   embedding: {
     title: "4. Text Embedding",
-    subtitle: "gemini-embedding-2",
-    badge: "LOCAL / CACHED",
-    desc: "Encodes normalized text into a 3072-dimensional vector space with local SHA-256 caching for instantaneous lookups.",
-    specs: ["Dimensions: 3072", "Unit L2 Normalization", "SHA-256 Disk Cache"]
+    subtitle: "multilingual-e5-small (ONNX)",
+    badge: "LOCAL IN-PROCESS",
+    desc: "Encodes normalized text into a 384-dimensional dense semantic vector space using a local multilingual transformer model on CPU with zero external API calls or rate limits.",
+    specs: ["Model: Xenova/multilingual-e5-small", "Dimensions: 384 (Float32)", "In-Process ONNX Inference"]
   },
   search: {
     title: "5. Hybrid Search Fused",
