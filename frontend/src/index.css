@@ -104,13 +104,60 @@ html, body {
 .top-bar-brand {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
-  font-size: 1.35rem;
-  font-weight: 700;
-  letter-spacing: -0.03em;
-  color: #FFFFFF;
+  gap: 0.65rem;
   cursor: pointer;
   user-select: none;
+  text-decoration: none;
+  transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.top-bar-brand:hover {
+  transform: scale(1.03);
+}
+
+/* RAGWave Custom Logo Badge */
+.ragwave-logo-badge {
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.28) 0%, rgba(255, 255, 255, 0.10) 100%);
+  border: 1.5px solid rgba(255, 255, 255, 0.35);
+  box-shadow: 0 4px 14px rgba(74, 99, 231, 0.35), inset 0 1px 2px rgba(255, 255, 255, 0.4);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  transition: all 0.25s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.top-bar-brand:hover .ragwave-logo-badge {
+  box-shadow: 0 0 20px rgba(165, 180, 252, 0.7), inset 0 1px 3px rgba(255, 255, 255, 0.6);
+  border-color: rgba(255, 255, 255, 0.6);
+}
+
+.brand-text-wrap {
+  display: flex;
+  align-items: baseline;
+  font-size: 1.35rem;
+  font-weight: 800;
+  letter-spacing: -0.035em;
+  line-height: 1;
+}
+
+.brand-name-rag {
+  color: #FFFFFF;
+  font-weight: 800;
+}
+
+.brand-name-wave {
+  background: linear-gradient(135deg, #C7D2FE 0%, #FFFFFF 45%, #F472B6 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  font-weight: 900;
+  margin-left: 1px;
 }
 
 /* 3-Way Segmented Navigation Pill */

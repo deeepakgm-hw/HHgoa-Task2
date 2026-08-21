@@ -26,7 +26,7 @@ export default function NavigationHeader({
       <div className="header-container">
         {/* Left: Brand Identity */}
         <div className="header-brand" onClick={() => setActiveView('inquiry')}>
-          <span className="brand-title">RAGGoa</span>
+          <span className="brand-title">RAGWave</span>
           <span className="brand-tagline">INDIC EVIDENCE LEDGER</span>
         </div>
 

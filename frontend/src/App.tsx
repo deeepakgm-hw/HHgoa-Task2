@@ -755,9 +755,29 @@ export default function App() {
         <div 
           className="top-bar-brand" 
           onClick={() => { setActiveTab('ask'); setPipelineState('idle'); setCurrentResult(null); }}
-          title="Return to Home"
+          title="RAGWave — Voice-Enabled Indic RAG"
         >
-          <span>RAGGoa</span>
+          {/* Custom RAGWave Neural Audio Wave Logo Badge */}
+          <div className="ragwave-logo-badge" aria-hidden="true">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M3 12C3 12 4.5 7 7.5 7C10.5 7 10.5 17 13.5 17C16.5 17 18 12 18 12" stroke="url(#ragwave-grad-1)" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" />
+              <path d="M6 12C6 12 7.5 9 9.5 9C11.5 9 12.5 15 14.5 15C16.5 15 18 12 21 12" stroke="#FFFFFF" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" opacity="0.95" />
+              <circle cx="13.5" cy="17" r="1.6" fill="#F472B6" />
+              <circle cx="7.5" cy="7" r="1.6" fill="#818CF8" />
+              <defs>
+                <linearGradient id="ragwave-grad-1" x1="3" y1="7" x2="21" y2="17" gradientUnits="userSpaceOnUse">
+                  <stop stopColor="#818CF8" />
+                  <stop offset="0.5" stopColor="#C084FC" />
+                  <stop offset="1" stopColor="#F472B6" />
+                </linearGradient>
+              </defs>
+            </svg>
+          </div>
+
+          <div className="brand-text-wrap">
+            <span className="brand-name-rag">RAG</span>
+            <span className="brand-name-wave">Wave</span>
+          </div>
         </div>
 
         {/* 3-Way High-Contrast Segmented Navigation Pill */}
@@ -1018,7 +1038,7 @@ export default function App() {
                     {currentResult.reason || currentResult.answer || "Query was rejected by safety or sanity guardrails."}
                   </p>
                   <span style={{ fontSize: '0.78rem', color: 'rgba(255, 255, 255, 0.65)' }}>
-                    RAGGoa strictly enforces safety boundaries and will not answer dangerous or gibberish prompts.
+                    RAGWave strictly enforces safety boundaries and will not answer dangerous or gibberish prompts.
                   </span>
                 </div>
               )}

@@ -83,12 +83,13 @@ export default function PerformanceView() {
         </div>
 
         <h1 className="perf-main-title">
-          How fast does RAGGoa think?<br />
-          <span className="perf-title-accent">Every number comes from a real execution.</span>
+          How fast does RAGWave think?<br />
+          <span style={{ fontSize: '0.9rem', color: 'var(--text-secondary)' }}>
+            Empirical latency audit across every pipeline stage (p50, p95, p99).
+          </span>
         </h1>
-
-        <p className="perf-main-desc">
-          RAGGoa strictly separates in-memory local vector retrieval (&lt;15ms) from external network APIs (Sarvam STT and Gemini LLM).
+        <p style={{ marginTop: '0.5rem', fontSize: '0.8rem', color: 'var(--text-secondary)' }}>
+          RAGWave strictly separates in-memory local vector retrieval (&lt;15ms) from external network APIs (Sarvam STT and Gemini LLM).
         </p>
 
         <div className="perf-cta-row">
