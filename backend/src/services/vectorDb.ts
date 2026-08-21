@@ -216,7 +216,7 @@ export class VectorDatabase {
       }
     }
 
-    // 2. FALLBACK PATH: Read raw JSON, construct graph, and automatically persist serialized binary index
+    // 2. Read vector store file supporting both JSON array and line-delimited formats
     if (!fs.existsSync(filePath)) {
       return false;
     }
@@ -224,6 +224,23 @@ export class VectorDatabase {
       this.store = [];
       this.hnswIndex.clear();
       
+      console.log(`Loading vector store from ${filePath}...`);
+      const fileContent = fs.readFileSync(filePath, 'utf8').trim();
+
+      if (fileContent.startsWith('[')) {
+        // Standard JSON Array format (e.g. vector_store_seed.json)
+        const items = JSON.parse(fileContent);
+        for (const item of items) {
+          if (item && item.chunk && item.embedding) {
+            this.store.push(item);
+            this.hnswIndex.add(item.chunk, item.embedding);
+          }
+        }
+        console.log(`✓ Successfully loaded ${this.store.length} chunks into HNSW index.`);
+        return true;
+      }
+
+      // Line-delimited / streaming JSON format
       const readline = await import('readline');
       const fileStream = fs.createReadStream(filePath, { encoding: 'utf8' });
       const rl = readline.createInterface({
@@ -231,8 +248,6 @@ export class VectorDatabase {
         crlfDelay: Infinity
       });
 
-      console.log(`Building HNSW index from raw JSON (one-time operation)...`);
-      let lineCount = 0;
       for await (const line of rl) {
         const trimmed = line.trim();
         if (!trimmed || trimmed === '[' || trimmed === ']') continue;
@@ -240,22 +255,14 @@ export class VectorDatabase {
         const jsonStr = trimmed.endsWith(',') ? trimmed.slice(0, -1) : trimmed;
         try {
           const item = JSON.parse(jsonStr);
-          this.store.push(item);
-          this.hnswIndex.add(item.chunk, item.embedding);
-          lineCount++;
-          if (lineCount % 10000 === 0) {
-            console.log(`  Indexed ${lineCount} chunks...`);
+          if (item && item.chunk && item.embedding) {
+            this.store.push(item);
+            this.hnswIndex.add(item.chunk, item.embedding);
           }
-        } catch (e) {
-          // Ignore partial or broken lines safely
-        }
+        } catch (e) {}
       }
 
-      // Automatically serialize built index to disk for subsequent instant cold-starts
-      console.log(`Serializing built HNSW index to disk for future sub-second cold starts...`);
-      this.saveSerializedIndex(defaultMeta, defaultVectors);
-      console.log(`✓ Pre-serialized HNSW index written to ${defaultMeta} & ${defaultVectors}`);
-
+      console.log(`✓ Successfully loaded ${this.store.length} chunks from line-delimited stream.`);
       return true;
     } catch (err) {
       console.error(`Failed to load vector store from ${filePath}:`, err);
