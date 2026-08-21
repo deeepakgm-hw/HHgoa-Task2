@@ -1,34 +1,33 @@
 # ==============================================================================
-# Multi-Stage Production Dockerfile for RAGGoa
-# Unified Voice-Enabled Indic RAG Application
+# Production Multi-Stage Dockerfile for RAGWave
+# Unified Full-Stack Voice-Enabled Indic RAG Application
 # ==============================================================================
 
 # ------------------------------------------------------------------------------
-# Stage 1: Build the React Frontend
+# Stage 1: Build Frontend & Backend in Unified Context
 # ------------------------------------------------------------------------------
-FROM node:20-alpine AS frontend-builder
-WORKDIR /app/frontend
+FROM node:20-alpine AS builder
+WORKDIR /app
 
-COPY frontend/package*.json ./
-RUN npm ci
+# Copy root and subpackage manifests
+COPY package*.json ./
+COPY backend/package*.json ./backend/
+COPY frontend/package*.json ./frontend/
 
-COPY frontend/ ./
-RUN npm run build
+# Install dependencies
+RUN npm ci --prefix backend
+RUN npm ci --prefix frontend
+
+# Copy source trees
+COPY backend/ ./backend/
+COPY frontend/ ./frontend/
+
+# Build backend TypeScript and frontend Vite bundle
+RUN npm run build --prefix backend
+RUN npm run build --prefix frontend
 
 # ------------------------------------------------------------------------------
-# Stage 2: Build the Node/TypeScript Backend
-# ------------------------------------------------------------------------------
-FROM node:20-alpine AS backend-builder
-WORKDIR /app/backend
-
-COPY backend/package*.json ./
-RUN npm ci
-
-COPY backend/ ./
-RUN npm run build
-
-# ------------------------------------------------------------------------------
-# Stage 3: Production Runtime Container
+# Stage 2: Production Runtime Container
 # ------------------------------------------------------------------------------
 FROM node:20-alpine AS runner
 WORKDIR /app
@@ -39,24 +38,19 @@ RUN apk add --no-cache curl
 ENV NODE_ENV=production
 ENV PORT=5000
 
-# Copy backend production dependencies & compiled dist
+# Install production dependencies for backend
 WORKDIR /app/backend
 COPY backend/package*.json ./
 RUN npm ci --only=production
 
-COPY --from=backend-builder /app/backend/dist ./dist
-COPY backend/data ./data
-COPY backend/.env* ./
+# Copy compiled backend dist and static assets
+COPY --from=builder /app/backend/dist ./dist
+COPY --from=builder /app/backend/data ./data
+COPY --from=builder /app/frontend/dist /app/frontend/dist
 
-# Copy compiled frontend static assets for Express to serve
-COPY --from=frontend-builder /app/frontend/dist /app/frontend/dist
-
-# Expose production port
 EXPOSE 5000
 
-# Healthcheck to verify vector database load and server responsiveness
 HEALTHCHECK --interval=30s --timeout=10s --start-period=60s --retries=3 \
   CMD curl -f http://localhost:5000/api/health || exit 1
 
-# Launch with 4GB heap space for HNSW 84k vector store
-CMD ["node", "--max-old-space-size=4096", "dist/server.js"]
+CMD ["node", "dist/server.js"]
