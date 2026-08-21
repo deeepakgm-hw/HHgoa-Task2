@@ -380,16 +380,31 @@ app.post('/api/tts', async (req: Request, res: Response) => {
   }
 });
 
-// Serve static assets from frontend build in production
-const frontendDistPath = path.join(__dirname, '..', '..', 'frontend', 'dist');
-if (fs.existsSync(frontendDistPath)) {
-  app.use(express.static(frontendDistPath));
+// Multi-path resolution to serve compiled React UI across Docker and local environments
+const candidateDistPaths = [
+  path.join(__dirname, '..', '..', 'frontend', 'dist'),
+  path.join(__dirname, '..', 'frontend', 'dist'),
+  path.join(process.cwd(), '..', 'frontend', 'dist'),
+  path.join(process.cwd(), 'frontend', 'dist'),
+  '/app/frontend/dist',
+  '/app/backend/frontend/dist'
+];
+
+const resolvedDistPath = candidateDistPaths.find(p => fs.existsSync(path.join(p, 'index.html')));
+
+if (resolvedDistPath) {
+  app.use(express.static(resolvedDistPath));
   app.get('*', (req: Request, res: Response) => {
     if (!req.path.startsWith('/api')) {
-      res.sendFile(path.join(frontendDistPath, 'index.html'));
+      res.sendFile(path.join(resolvedDistPath, 'index.html'));
     }
   });
-  console.log(`Configured Express to serve static assets from: ${frontendDistPath}`);
+  console.log(`✓ Serving React static frontend from: ${resolvedDistPath}`);
+} else {
+  console.warn(`[WARN] frontend/dist/index.html not found. Checked candidate paths:`, candidateDistPaths);
+  app.get('/', (req: Request, res: Response) => {
+    res.send(`<h2>RAGWave API is Running</h2><p>Check API health at <a href="/api/health">/api/health</a></p>`);
+  });
 }
 
 const PORT = process.env.PORT || 5000;
