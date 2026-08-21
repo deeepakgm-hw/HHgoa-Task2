@@ -36,7 +36,6 @@ WORKDIR /app
 RUN apt-get update && apt-get install -y --no-install-recommends curl && rm -rf /var/lib/apt/lists/*
 
 ENV NODE_ENV=production
-ENV PORT=5000
 
 # Copy production dependencies, compiled dist, and static assets
 COPY --from=builder /app/backend/node_modules ./node_modules
@@ -45,9 +44,10 @@ COPY --from=builder /app/backend/data ./data
 COPY --from=builder /app/backend/data /app/backend/data
 COPY --from=builder /app/frontend/dist /app/frontend/dist
 
+EXPOSE 10000
 EXPOSE 5000
 
 HEALTHCHECK --interval=30s --timeout=10s --start-period=60s --retries=3 \
-  CMD curl -f http://localhost:5000/api/health || exit 1
+  CMD curl -f http://127.0.0.1:${PORT:-10000}/api/health || exit 1
 
 CMD ["node", "dist/server.js"]

@@ -395,7 +395,7 @@ if (resolvedDistPath) {
   });
 }
 
-const PORT = Number(process.env.PORT) || 5000;
+const PORT = Number(process.env.PORT) || 10000;
 const HOST = '0.0.0.0';
 
 if (process.env.NODE_ENV !== 'test') {
