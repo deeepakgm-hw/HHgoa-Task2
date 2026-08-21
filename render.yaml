@@ -1,9 +1,9 @@
 services:
   - type: web
-    name: raggoa-voice-rag
+    name: ragwave-voice-rag
     env: docker
     dockerfilePath: ./Dockerfile
-    plan: standard # Standard tier has 4GB RAM (required for 84k in-memory HNSW index)
+    plan: free # 100% Free tier (No credit card or payment info required)
     region: oregon
     healthCheckPath: /api/health
     envVars:
