@@ -216,7 +216,45 @@ export class VectorDatabase {
       }
     }
 
-    // 2. Read vector store file supporting both JSON array and line-delimited formats
+    // 2. MULTI-PART GZIP PATH: Load compressed 84,661 chunks from 3 git-tracked parts
+    const dir = path.dirname(filePath);
+    const p1 = path.join(dir, 'vector_store_part1.json.gz');
+    const p2 = path.join(dir, 'vector_store_part2.json.gz');
+    const p3 = path.join(dir, 'vector_store_part3.json.gz');
+
+    if (fs.existsSync(p1) && fs.existsSync(p2) && fs.existsSync(p3)) {
+      try {
+        this.store = [];
+        this.hnswIndex.clear();
+        console.log(`Loading full 84,661 vector store from 3 gzip parts in ${dir}...`);
+        const zlib = await import('zlib');
+        const readline = await import('readline');
+
+        for (const partPath of [p1, p2, p3]) {
+          const gunzip = zlib.createGunzip();
+          const stream = fs.createReadStream(partPath).pipe(gunzip);
+          const rl = readline.createInterface({ input: stream, crlfDelay: Infinity });
+          for await (const line of rl) {
+            const t = line.trim();
+            if (!t || t === '[' || t === ']') continue;
+            const jsonStr = t.endsWith(',') ? t.slice(0, -1) : t;
+            try {
+              const item = JSON.parse(jsonStr);
+              if (item && item.chunk && item.embedding) {
+                this.store.push(item);
+                this.hnswIndex.add(item.chunk, item.embedding);
+              }
+            } catch (e) {}
+          }
+        }
+        console.log(`✓ Successfully loaded full dataset (${this.store.length} chunks) from 3 compressed parts.`);
+        return true;
+      } catch (err) {
+        console.error(`Failed to load multi-part gzip vector store:`, err);
+      }
+    }
+
+    // 3. Fallback to standard JSON or streaming line-delimited JSON
     if (!fs.existsSync(filePath)) {
       return false;
     }
