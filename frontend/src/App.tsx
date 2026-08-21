@@ -981,21 +981,21 @@ export default function App() {
                 </span>
                 
                 {/* State 1: Grounded Success */}
-                {currentResult.status === 'GROUNDED_SUCCESS' && (
+                {(currentResult.status?.toLowerCase().includes('grounded') || currentResult.status === 'SUCCESS') && (
                   <span className="answer-badge-grounded">
                     ✓ Verified Grounded (MSMARCO-XI)
                   </span>
                 )}
 
                 {/* State 2: General Knowledge (Gemini Fallback) */}
-                {currentResult.status === 'GEMINI_FALLBACK' && (
+                {(currentResult.status?.toLowerCase().includes('fallback') || currentResult.mode === 'GEMINI_FALLBACK') && (
                   <span style={{ color: '#7DD3FC', display: 'flex', alignItems: 'center', gap: '0.35rem', fontWeight: 700 }}>
                     ✦ General Knowledge (Gemini Fallback)
                   </span>
                 )}
 
                 {/* State 3: Refusal / Guardrail Blocked */}
-                {(currentResult.status === 'INSUFFICIENT_CTX' || currentResult.status === 'VALIDATION_ERROR') && (
+                {(currentResult.status?.toLowerCase().includes('insufficient') || currentResult.status?.toLowerCase().includes('error') || currentResult.status === 'REFUSED') && (
                   <span className="answer-badge-refused">
                     ✗ Refusal / Guardrail Blocked
                   </span>
@@ -1003,10 +1003,10 @@ export default function App() {
               </div>
 
               {/* State 1 Body: Grounded Answer with Cited Passage */}
-              {currentResult.status === 'GROUNDED_SUCCESS' && (
+              {(currentResult.status?.toLowerCase().includes('grounded') || currentResult.status === 'SUCCESS') && (
                 <>
                   <p className={`answer-body-prose ${detectedScriptInfo.fontClass}`}>
-                    {cleanAnswer}
+                    {cleanAnswer || currentResult.answer}
                   </p>
 
                   {currentResult.sources && currentResult.sources[0] && (
@@ -1018,7 +1018,7 @@ export default function App() {
               )}
 
               {/* State 2 Body: General Knowledge Fallback with Explicit Disclosure */}
-              {currentResult.status === 'GEMINI_FALLBACK' && (
+              {(currentResult.status?.toLowerCase().includes('fallback') || currentResult.mode === 'GEMINI_FALLBACK') && (
                 <>
                   <div style={{ background: 'rgba(56, 189, 248, 0.16)', border: '1px solid rgba(56, 189, 248, 0.35)', borderRadius: '12px', padding: '0.75rem 1rem', fontSize: '0.82rem', color: '#BAE6FD', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
                     <span>ℹ</span>
@@ -1026,13 +1026,13 @@ export default function App() {
                   </div>
 
                   <p className={`answer-body-prose ${detectedScriptInfo.fontClass}`}>
-                    {cleanAnswer}
+                    {cleanAnswer || currentResult.answer}
                   </p>
                 </>
               )}
 
               {/* State 3 Body: Guardrail / Refusal */}
-              {(currentResult.status === 'INSUFFICIENT_CTX' || currentResult.status === 'VALIDATION_ERROR') && (
+              {(currentResult.status?.toLowerCase().includes('insufficient') || currentResult.status?.toLowerCase().includes('error') || currentResult.status === 'REFUSED') && (
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
                   <p className="answer-body-prose" style={{ color: 'var(--accent-refusal)', fontSize: '1.05rem' }}>
                     {currentResult.reason || currentResult.answer || "Query was rejected by safety or sanity guardrails."}
@@ -1041,6 +1041,16 @@ export default function App() {
                     RAGWave strictly enforces safety boundaries and will not answer dangerous or gibberish prompts.
                   </span>
                 </div>
+              )}
+
+              {/* Universal Fallback: If neither state matched but answer exists */}
+              {!currentResult.status?.toLowerCase().includes('grounded') && 
+               !currentResult.status?.toLowerCase().includes('fallback') && 
+               !currentResult.status?.toLowerCase().includes('insufficient') && 
+               (cleanAnswer || currentResult.answer) && (
+                <p className={`answer-body-prose ${detectedScriptInfo.fontClass}`}>
+                  {cleanAnswer || currentResult.answer}
+                </p>
               )}
 
               {/* ── Google Assistant Spoken Voice Output Bar ── */}
