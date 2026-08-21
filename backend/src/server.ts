@@ -407,27 +407,32 @@ if (resolvedDistPath) {
   });
 }
 
-const PORT = process.env.PORT || 5000;
+const PORT = Number(process.env.PORT) || 5000;
+const HOST = '0.0.0.0';
 
-(async () => {
-  if (process.env.NODE_ENV !== 'test') {
-    console.log("Loading vector store from disk, please wait...");
-    const isDbIndexed = await vectorDb.loadFromFileAsync(vectorDbPath);
-    if (isDbIndexed) {
-      Logger.info(`Successfully loaded vector database index with ${vectorDb.size()} chunks.`);
-    } else {
-      Logger.warn(`Vector store not found at ${vectorDbPath}. Server starting with empty index! Run 'npm run ingest' to seed the store.`);
+if (process.env.NODE_ENV !== 'test') {
+  app.listen(PORT, HOST, () => {
+    console.log(`\n=========================================`);
+    console.log(`RAGWave server running on http://${HOST}:${PORT}`);
+    console.log(`=========================================\n`);
+  });
+
+  // Load vector store asynchronously in the background so port binding is instant
+  (async () => {
+    try {
+      console.log("Loading vector store from disk, please wait...");
+      const isDbIndexed = await vectorDb.loadFromFileAsync(vectorDbPath);
+      if (isDbIndexed) {
+        Logger.info(`Successfully loaded vector database index with ${vectorDb.size()} chunks.`);
+      } else {
+        Logger.warn(`Vector store not found at ${vectorDbPath}. Server starting with empty index!`);
+      }
+    } catch (err: any) {
+      console.error("Error loading vector store:", err.message || err);
     }
-    
-    app.listen(PORT, () => {
-      console.log(`\n=========================================`);
-      console.log(`Backend server running on http://localhost:${PORT}`);
-      console.log(`=========================================\n`);
-    });
-  } else {
-    // For tests, load synchronously if needed, or rely on test setup
-    vectorDb.loadFromFileAsync(vectorDbPath).catch(console.error);
-  }
-})();
+  })();
+} else {
+  vectorDb.loadFromFileAsync(vectorDbPath).catch(console.error);
+}
 
 export { app, ragPipeline };
