@@ -1,0 +1,16 @@
+{
+  "version": 2,
+  "buildCommand": "npm run build:frontend",
+  "outputDirectory": "frontend/dist",
+  "framework": "vite",
+  "rewrites": [
+    {
+      "source": "/api/(.*)",
+      "destination": "https://ragwave-voice-rag.onrender.com/api/"
+    },
+    {
+      "source": "/(.*)",
+      "destination": "/index.html"
+    }
+  ]
+}
