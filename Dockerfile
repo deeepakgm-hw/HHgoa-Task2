@@ -38,12 +38,8 @@ RUN apk add --no-cache curl
 ENV NODE_ENV=production
 ENV PORT=5000
 
-# Install production dependencies for backend
-WORKDIR /app/backend
-COPY backend/package*.json ./
-RUN npm ci --only=production
-
-# Copy compiled backend dist and static assets
+# Copy production dependencies, compiled dist, and static assets
+COPY --from=builder /app/backend/node_modules ./node_modules
 COPY --from=builder /app/backend/dist ./dist
 COPY --from=builder /app/backend/data ./data
 COPY --from=builder /app/frontend/dist /app/frontend/dist
