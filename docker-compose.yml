@@ -1,0 +1,26 @@
+version: '3.8'
+
+services:
+  raggoa:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: raggoa-app
+    restart: unless-stopped
+    ports:
+      - "5000:5000"
+    environment:
+      - PORT=5000
+      - NODE_ENV=production
+      - SARVAM_API_KEY=${SARVAM_API_KEY}
+      - GEMINI_API_KEY=${GEMINI_API_KEY}
+      - GEMINI_GENERATION_MODEL=${GEMINI_GENERATION_MODEL:-gemini-3.5-flash-lite}
+      - GEMINI_EMBEDDING_MODEL=${GEMINI_EMBEDDING_MODEL:-gemini-embedding-2}
+      - DATASET_MODE=real
+      - CONFIDENCE_THRESHOLD=0.08
+    deploy:
+      resources:
+        limits:
+          memory: 4096M
+        reservations:
+          memory: 2048M

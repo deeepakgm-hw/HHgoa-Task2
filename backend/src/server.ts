@@ -13,7 +13,8 @@ import { RerankingService } from './services/reranking';
 import { GenerationService } from './services/generation';
 import { GuardrailService } from './services/guardrails';
 import { SttService } from './services/stt';
-import { RagPipeline } from './services/ragPipeline';
+import { TtsService } from './services/tts';
+import { RagPipeline, TechnicalDebugInfo } from './services/ragPipeline';
 import { Logger } from './utils/logger';
 
 const app = express();
@@ -99,6 +100,7 @@ const rerankingService = new RerankingService();
 const genService = new GenerationService();
 const guardrailService = new GuardrailService(parseFloat(process.env.CONFIDENCE_THRESHOLD || '0.08'));
 const sttService = new SttService();
+const ttsService = new TtsService();
 
 // Instantiate decoupled RAG pipeline
 const ragPipeline = new RagPipeline(
@@ -348,6 +350,32 @@ app.post('/api/voice-query', (req, res, next) => {
     res.status(statusCode).json({
       requestId,
       error: msg
+    });
+  }
+});
+
+/**
+ * Text-to-Speech Route (Sarvam AI Bulbul Multilingual TTS)
+ */
+app.post('/api/tts', async (req: Request, res: Response) => {
+  const { text, languageCode } = req.body;
+  if (!text || typeof text !== 'string') {
+    return res.status(400).json({ error: "Text is required for TTS synthesis." });
+  }
+
+  try {
+    const audioBase64 = await ttsService.synthesize(text, languageCode || 'hi-IN');
+    res.status(200).json({
+      status: 'success',
+      audio: audioBase64,
+      language: languageCode,
+      mimeType: 'audio/wav'
+    });
+  } catch (err: any) {
+    console.error(`[TTS Service Error]:`, err.message || err);
+    res.status(500).json({
+      status: 'error',
+      error: err.message || "TTS synthesis failed"
     });
   }
 });

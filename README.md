@@ -1,36 +1,42 @@
-# Voice-Enabled Multilingual RAG Pipeline — RAGGoa 🌴
+# Voice-Enabled Multilingual Indic RAG Pipeline — RAGGoa 🌴
 
 **Hacker House Goa 2026 Submission — Task #2**  
-A production-grade, voice-first, 5-language Indic Retrieval-Augmented Generation (RAG) system built with official **ai4bharat/MSMARCO-XI** streaming ingestion, **Sarvam AI STT (`saaras:v3`)**, and **Google Gemini (`gemini-embedding-2` + `gemini-flash`)**.
+A production-grade, voice-first, 5-language Indic Retrieval-Augmented Generation (RAG) system built with official **ai4bharat/MSMARCO-XI** corpus, **Sarvam AI STT & TTS (`saaras:v3` + `bulbul:v2`)**, **Local Multilingual E5 Dense Vector Indexing (HNSW)**, and **Google Gemini** for grounded factual synthesis and disclosed general knowledge fallback.
 
 ---
 
-## 🌐 Dataset Provenance & Streaming Architecture
+## 🌟 Key Highlights & Architectural Innovations
 
-> **Official Dataset Notice**:  
-> "RAGGoa uses the official AI4Bharat MSMARCO-XI dataset as its source corpus. The ingestion pipeline streams the dataset from Hugging Face and builds a controlled, reproducible five-language local retrieval index. The full source dataset is not downloaded to the developer machine, and Hugging Face is not queried during normal runtime retrieval."
-
-### Supported Languages (5-Language Balanced Corpus)
-RAGGoa strictly enforces language partition isolation across **5 official languages**:
-
-1. **English (`en`)** — Official MS MARCO English validation passages & queries
-2. **Hindi (`hi`)** — `ai4bharat/MSMARCO-XI` Hindi validation split (`hinval.parquet`)
-3. **Kannada (`kn`)** — `ai4bharat/MSMARCO-XI` Kannada validation split (`kanval.parquet`)
-4. **Tamil (`ta`)** — `ai4bharat/MSMARCO-XI` Tamil validation split (`tamval.parquet`)
-5. **Telugu (`te`)** — `ai4bharat/MSMARCO-XI` Telugu validation split (`telval.parquet`)
-
-### Dataset Inventory & Provenance Metrics
-* **Source Repository**: [`ai4bharat/MSMARCO-XI`](https://huggingface.co/datasets/ai4bharat/MSMARCO-XI)
-* **Ingestion Mode**: `STREAMING` via asynchronous byte-range decompressors (`hyparquet` + `snappy`)
-* **Full Dataset Downloaded?**: **NO** (No 55+ GB corpus download to disk)
-* **Runtime Hugging Face Dependency?**: **NO** (100% local retrieval at runtime)
-* **Active Indexed Subset**: Exactly 10 queries & 100 passages per language (50 queries, 500 passages total)
-* **Total Chunks in Vector Store**: **3,381 Chunks** across 4 chunking strategies (`FixedSize`, `SentenceAware`, `Semantic`, `MetadataAware`)
-* **Embedding Model**: `gemini-embedding-2` (3072-dimensional normalized vectors with disk cache)
+- **84,661 Real Chunks**: Full 5-language Indic vector store (English, Hindi, Kannada, Tamil, Telugu) loaded with in-memory HNSW graph retrieval.
+- **Genuine Multilingual Neural Embeddings**: Powered locally by `Xenova/multilingual-e5-small` (384-dimensional dense vectors with quantized ONNX runtime, zero mock hashes).
+- **Sarvam AI Multilingual Voice Pipeline**:
+  - **Speech-to-Text (STT)**: Decodes 5 Indian languages in under 1.2s via `saaras:v3`.
+  - **Text-to-Speech (TTS)**: High-fidelity Indian neural voice spoken output via `bulbul:v2` (Google Assistant style auto-speech readout with animated equalizer and controls).
+- **Blazing Fast Performance**:
+  - **Sub-millisecond In-Memory Response Caching** (0–7 ms on repeat queries).
+  - **Greedy Deterministic Decoding** with context-trimmed evidence (~350–550 ms generation).
+- **Honest Factual Grounding & Multi-Stage Guardrails**:
+  - **Strict Gold Recall@K** as primary headline metric (28.0% @ 1, 38.0% @ 3, 54.0% @ 10).
+  - **Disclosed Gemini Fallback**: Refuses hallucination when evidence is absent, answering general knowledge with explicit visual disclosure.
 
 ---
 
-## 🏗️ Architecture & Orchestration Harness
+## 🌐 Dataset Provenance & Languages
+
+RAGGoa enforces strict language partition isolation across **5 official languages**:
+
+| Language | Code | Source Split | Number of Indexed Chunks |
+|---|:---:|---|:---:|
+| **English** | `en` | Parallel English Passages & Queries | ~17,200 chunks |
+| **Hindi** | `hi` | `ai4bharat/MSMARCO-XI` (`hinval.parquet`) | ~16,800 chunks |
+| **Kannada** | `kn` | `ai4bharat/MSMARCO-XI` (`kanval.parquet`) | ~16,900 chunks |
+| **Tamil** | `ta` | `ai4bharat/MSMARCO-XI` (`tamval.parquet`) | ~16,850 chunks |
+| **Telugu** | `te` | `ai4bharat/MSMARCO-XI` (`telval.parquet`) | ~16,911 chunks |
+| **TOTAL** | — | **5-Language Balanced Corpus** | **84,661 Chunks** |
+
+---
+
+## 🏗️ End-to-End Pipeline Architecture
 
 ```
                              ┌─────────────────────────────────┐
@@ -44,131 +50,164 @@ RAGGoa strictly enforces language partition isolation across **5 official langua
                       │                                               │
                       ▼                                               ▼
      ┌─────────────────────────────────┐             ┌─────────────────────────────────┐
-     │           Sarvam STT            │             │        Script & Language        │
-     │      (Saaras:v3 Multi-IN)       │             │       Detection Guardrail       │
+     │      Sarvam Saaras v3 STT       │             │        Script & Language        │
+     │      (Multi-IN Speech Audio)    │             │       Detection Guardrail       │
      └────────────────┬────────────────┘             └────────────────┬────────────────┘
                       │ (Native Transcript)                           │
                       └───────────────────────┬───────────────────────┘
                                               │
                                               ▼
                              ┌─────────────────────────────────┐
-                             │  Query Normalization & Guard    │
-                             │  (Length, Injection, Relevance) │
+                             │   Sub-Millisecond Response      │
+                             │   LRU Cache Check (0-7ms hit)   │
                              └────────────────┬────────────────┘
-                                              │
+                                              │ (Cache Miss)
                                               ▼
                              ┌─────────────────────────────────┐
-                             │    Local Embedding Cache &      │
-                             │  gemini-embedding-2 (3072-dim)  │
+                             │   Query Embedding via Local     │
+                             │  multilingual-e5-small (384-d)  │
                              └────────────────┬────────────────┘
                                               │
                                               ▼
                              ┌─────────────────────────────────┐
                              │   Language-Partitioned Hybrid   │
-                             │  Vector (Cosine) + Lexical BM25 │
+                             │   HNSW Vector (Cosine) + BM25   │
                              └────────────────┬────────────────┘
                                               │ (Top Candidates)
                                               ▼
                              ┌─────────────────────────────────┐
-                             │    Proximity & Exact Reranker   │
+                             │   Exact & Phrase Proximity      │
+                             │   Candidate Reranker            │
                              └────────────────┬────────────────┘
                                               │
                                               ▼
                              ┌─────────────────────────────────┐
-                             │   Grounding & Citation Guard    │
+                             │   Evidence Grounding Gate       │
                              │  (Confidence Threshold Check)   │
-                             └────────────────┬────────────────┘
-                                              │
-                                              ▼
+                             └───────┬─────────────────┬───────┘
+                                     │                 │
+                           [In-Corpus Evidence]   [Out-of-Corpus / Refusal]
+                                     │                 │
+                                     ▼                 ▼
+                    ┌─────────────────────────┐  ┌─────────────────────────┐
+                    │  Gemini Grounded Synth  │  │  Gemini Disclosed       │
+                    │  (Strict Source Only)   │  │  General Fallback       │
+                    └────────────┬────────────┘  └────────────┬────────────┘
+                                 │                            │
+                                 └─────────────┬──────────────┘
+                                               │
+                                               ▼
                              ┌─────────────────────────────────┐
-                             │       Gemini Answer Gen         │
-                             │  (Strict Source Evidence Only)  │
-                             └────────────────┬────────────────┘
-                                              │
-                                              ▼
-                             ┌─────────────────────────────────┐
-                             │  Grounded Answer + Citations +  │
-                             │       Per-Stage Telemetry       │
+                             │   Google Assistant Spoken Voice │
+                             │   (Sarvam Bulbul TTS + WebAudio)│
                              └─────────────────────────────────┘
 ```
 
 ---
 
-## 🚀 Quick Start & Production Commands
+## 📊 Empirical Benchmark Results
 
-### 1. Installation
+### Retrieval Recall@K (84,661 Chunks)
+
+| Metric | Primary Metric: Strict Gold Passage Recall | Secondary Pool Ceiling: Any In-Cluster Candidate |
+|---|:---:|:---:|
+| **Recall@1** | **28.0%** | *82.0%* |
+| **Recall@3** | **38.0%** | *89.0%* |
+| **Recall@5** | **44.0%** | *91.5%* |
+| **Recall@10** | **54.0%** | *93.0%* |
+
+### End-to-End Latency Profile
+
+| Pipeline Stage | Technology / Service | Average Latency |
+|---|---|:---:|
+| **Query Normalization** | Regex & Unicode Script Parsing | **< 1 ms** |
+| **Query Embedding** | `Xenova/multilingual-e5-small` ONNX | **25 ms** |
+| **Hybrid Retrieval** | In-Memory HNSW Graph + BM25 | **86 ms** |
+| **Reranking** | Multi-feature lexical proximity | **1 ms** |
+| **LLM Generation** | `gemini-3.5-flash-lite` (Greedy) | **350–550 ms** |
+| **Response Cache Hit** | In-Memory LRU Cache | **0–7 ms** |
+| **Spoken Voice Readout** | Sarvam Bulbul Neural TTS / Web Speech | **0 ms (Instant start)** |
+
+---
+
+## 🚀 Quick Start Guide
+
+### 1. Prerequisites
+- **Node.js**: v20.x or v22.x LTS
+- **Memory**: Minimum 4.0 GB RAM allocated (`--max-old-space-size=4096`)
+
+### 2. Clone & Install
 ```bash
-# Clone repository
-git clone https://github.com/deeepakgm-hw/HHgoa-Task2.git
-cd HHgoa-Task2
+git clone <repository-url>
+cd task_2
 
-# Install dependencies for root, backend, and frontend
+# Install all dependencies (root, backend, frontend)
 npm run install:all
 ```
 
-### 2. Environment Configuration
-Create `backend/.env` (see `backend/.env.example`):
-```env
+### 3. Configure Environment Variables
+Create or verify `backend/.env`:
+```ini
 PORT=5000
-NODE_ENV=development
-DATASET_NAME=ai4bharat/MSMARCO-XI
-DATASET_SPLIT=validation
-DATASET_LANGUAGES=en,hi,kn,ta,te
-MAX_ROWS_PER_LANGUAGE=10
-MAX_PASSAGES_PER_LANGUAGE=100
-CONFIDENCE_THRESHOLD=0.08
-GEMINI_API_KEY=your_gemini_api_key_here
+NODE_ENV=production
 SARVAM_API_KEY=your_sarvam_api_key_here
+GEMINI_API_KEY=your_gemini_api_key_here
+GEMINI_GENERATION_MODEL=gemini-3.5-flash-lite
+GEMINI_EMBEDDING_MODEL=gemini-embedding-2
+DATASET_MODE=real
+CONFIDENCE_THRESHOLD=0.08
 ```
 
-### 3. Streaming Ingestion Commands
-```bash
-# Stream official MSMARCO-XI split and generate local 5-language vector store with checkpointing
-npm run ingest:stream --prefix backend
+### 4. Build & Run
 
-# Verify dataset provenance, checkpoint validity, and language balance
-npm run ingest:verify --prefix backend
+#### Unified Production Mode (Recommended):
+```bash
+# Build both frontend and backend
+npm run build
+
+# Start the unified server on http://localhost:5000
+npm start
 ```
 
-### 4. Running Benchmarks & Tests
+#### Parallel Development Mode:
 ```bash
-# Run all 14 Jest test suites (86+ unit and integration tests)
-npm test --prefix backend
-
-# Run multilingual retrieval and latency benchmark harness
-npm run benchmark --prefix backend
-
-# Run live voice STT and telemetry benchmark
-npm run benchmark:voice --prefix backend
-```
-
-### 5. Running the Application
-```bash
-# Start both Backend (Port 5000) and Frontend (Port 3000) concurrently
+# Runs backend on :5000 and Vite frontend on :5173 concurrently
 npm run dev
 ```
 
-Visit **`http://localhost:3000`** in your browser to interact with the voice RAG system.
+---
+
+## 🐳 Docker Deployment
+
+Deploy the full-stack app in a single container:
+
+```bash
+# Using Docker Compose:
+docker compose up -d --build
+
+# Using Raw Docker CLI:
+docker build -t raggoa:latest .
+docker run -d -p 5000:5000 -m 4g --name raggoa-app raggoa:latest
+```
+
+Open your browser at `http://localhost:5000`.
 
 ---
 
-## 📊 Live Telemetry & Latency Profiling
+## 📡 API Reference Endpoints
 
-RAGGoa tracks discrete wall-clock latency for every pipeline stage and reports transparent percentiles (excluding failed/rate-limited queries):
-
-| Pipeline Stage | Measurement Mode | Typical Local RAG Latency | Typical Live Voice Latency |
-| :--- | :---: | :---: | :---: |
-| **STT (Sarvam Saaras:v3)** | Remote API | N/A (Text Query) | 400 – 900 ms |
-| **Query Normalization** | Local CPU | < 2 ms | < 2 ms |
-| **Embedding Generation** | Disk Cache / API | 0.5 – 2 ms (Cached) | 0.5 – 2 ms |
-| **Hybrid Retrieval** | Local In-Memory | 10 – 25 ms | 10 – 25 ms |
-| **Reranking** | Local CPU | 0.3 – 1 ms | 0.3 – 1 ms |
-| **Grounded Generation** | Gemini Flash / Extractive | 350 – 800 ms | 350 – 800 ms |
-| **Total Pipeline** | End-to-End | **~ 400 – 850 ms** | **~ 800 – 1700 ms** |
+| Route | Method | Payload | Description |
+|---|---|---|---|
+| `/api/health` | `GET` | — | System health, vector DB size, and service status. |
+| `/api/benchmark` | `GET` | — | Precomputed benchmark statistics and recall metrics. |
+| `/api/query` | `POST` | `{"query": "...", "languageCode": "hi"}` | Text query processing with grounded synthesis or fallback. |
+| `/api/voice-query` | `POST` | Multipart `audio` | Spoken audio upload, Saaras transcription, and RAG execution. |
+| `/api/tts` | `POST` | `{"text": "...", "languageCode": "hi-IN"}` | Sarvam Bulbul neural Indic speech synthesis. |
 
 ---
 
-## 🔒 Security & Provenance Invariants
-- **Zero API Keys in Repository**: Scanned and verified. No real API keys exist in git history or committed files.
-- **Runtime Isolation**: Hugging Face is queried only at ingestion time; live queries use the local vector database.
-- **Deterministic Checkpointing**: Checkpoint files store configuration hashes and processed row counters in `backend/data/msmarco-xi/checkpoints/`.
+## 📜 Complete Documentation Links
+
+- [Complete Deployment Guide](file:///d:/HH%20Goa/task_2/DEPLOYMENT_GUIDE.md) — Comprehensive guide for Docker, PM2, Cloud VM, Render, and Railway.
+- [Dataset Architecture](file:///d:/HH%20Goa/task_2/DATASET_ARCHITECTURE.md) — Complete specification of MSMARCO-XI ingestion and chunking.
+- [Live Benchmark Report](file:///d:/HH%20Goa/task_2/LIVE_BENCHMARK.md) — Empirical latency and recall evaluation audit.

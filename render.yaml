@@ -1,30 +1,25 @@
 services:
   - type: web
-    name: raggoa
-    runtime: node
-    region: singapore
-    plan: free
-    rootDir: .
-    buildCommand: npm install && npm install --prefix backend && npm install --prefix frontend && npm run build
-    startCommand: npm start
+    name: raggoa-voice-rag
+    env: docker
+    dockerfilePath: ./Dockerfile
+    plan: standard # Standard tier has 4GB RAM (required for 84k in-memory HNSW index)
+    region: oregon
+    healthCheckPath: /api/health
     envVars:
+      - key: PORT
+        value: 5000
       - key: NODE_ENV
         value: production
-      - key: PORT
-        value: 10000
-      - key: GEMINI_API_KEY
-        sync: false
       - key: SARVAM_API_KEY
         sync: false
+      - key: GEMINI_API_KEY
+        sync: false
+      - key: GEMINI_GENERATION_MODEL
+        value: gemini-3.5-flash-lite
       - key: GEMINI_EMBEDDING_MODEL
         value: gemini-embedding-2
-      - key: GEMINI_GENERATION_MODEL
-        value: gemini-3.5-flash
       - key: DATASET_MODE
         value: real
-      - key: MAX_REQUESTS_PER_WINDOW
-        value: 30
-      - key: RATE_LIMIT_WINDOW_MS
-        value: 60000
-    healthCheckPath: /api/health
-    autoDeploy: false
+      - key: CONFIDENCE_THRESHOLD
+        value: "0.08"

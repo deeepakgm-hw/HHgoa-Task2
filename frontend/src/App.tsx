@@ -162,8 +162,11 @@ export default function App() {
   // Real Web Audio Waveform state
   const [audioLevels, setAudioLevels] = useState<number[]>(new Array(24).fill(12));
   const [recordingTimer, setRecordingTimer] = useState<number>(0);
-  const [micError, setMicError] = useState<string>('');
+  const [micError, setMicError] = useState<string | null>(null);
+  const [isSpeaking, setIsSpeaking] = useState<boolean>(false);
+  const [autoSpeak, setAutoSpeak] = useState<boolean>(true);
 
+  // Audio recording refs
   const isRecordingRef = useRef<boolean>(false);
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
   const audioChunksRef = useRef<Blob[]>([]);
@@ -173,8 +176,144 @@ export default function App() {
   const audioContextRef = useRef<AudioContext | null>(null);
   const analyserRef = useRef<AnalyserNode | null>(null);
   const animFrameRef = useRef<number | null>(null);
+  const activeAudioRef = useRef<HTMLAudioElement | null>(null);
+  const speechRecognitionRef = useRef<any | null>(null);
+  const liveTranscriptRef = useRef<string>('');
+  const silenceTimeoutRef = useRef<any | null>(null);
 
   const MAX_RECORDING_SECONDS = 20;
+
+  // Google Assistant Style Neural Multilingual Text-to-Speech (TTS)
+  function stopSpeech() {
+    if (activeAudioRef.current) {
+      try {
+        activeAudioRef.current.pause();
+        activeAudioRef.current.currentTime = 0;
+      } catch (e) {}
+      activeAudioRef.current = null;
+    }
+    if (typeof window !== 'undefined' && 'speechSynthesis' in window) {
+      try {
+        window.speechSynthesis.cancel();
+      } catch (e) {}
+    }
+    setIsSpeaking(false);
+  }
+
+  async function speakText(rawText: string, langCode: string) {
+    stopSpeech();
+
+    // Clean text to sound natural like Google Assistant
+    const cleanSpeechText = rawText
+      .replace(/^Based on (?:sources?|retrieved context|the provided context)?\s*\[[^\]]+\]:?\s*/i, '')
+      .replace(/\[Source\s*\d+\]/gi, '')
+      .replace(/\[\d+\]/g, '')
+      .replace(/\[msmarco-[^\]]+\]/gi, '')
+      .replace(/[*#_`~>]/g, '')
+      .replace(/\s+/g, ' ')
+      .trim();
+
+    if (!cleanSpeechText) return;
+
+    const langPrefix = (langCode || selectedLanguage || 'hi-IN').split('-')[0].toLowerCase();
+
+    // Instant zero-delay voice readout for English
+    if (langPrefix === 'en' && typeof window !== 'undefined' && 'speechSynthesis' in window) {
+      try {
+        const utterance = new SpeechSynthesisUtterance(cleanSpeechText);
+        const voices = window.speechSynthesis.getVoices();
+        const enVoice = voices.find(v => v.lang.toLowerCase().includes('en-in')) || 
+                        voices.find(v => v.lang.toLowerCase().startsWith('en'));
+        if (enVoice) utterance.voice = enVoice;
+        utterance.lang = 'en-IN';
+        utterance.rate = 1.0;
+        utterance.onstart = () => setIsSpeaking(true);
+        utterance.onend = () => setIsSpeaking(false);
+        utterance.onerror = () => setIsSpeaking(false);
+        window.speechSynthesis.speak(utterance);
+        return;
+      } catch (e) {}
+    }
+
+    // High-Fidelity Indic Neural Audio via Sarvam Bulbul TTS (/api/tts)
+    try {
+      setIsSpeaking(true);
+      const res = await fetch('/api/tts', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          text: cleanSpeechText,
+          languageCode: langCode || selectedLanguage || 'hi-IN'
+        })
+      });
+
+      if (res.ok) {
+        const data = await res.json();
+        if (data.audio) {
+          const audio = new Audio(`data:audio/wav;base64,${data.audio}`);
+          activeAudioRef.current = audio;
+          audio.onended = () => {
+            setIsSpeaking(false);
+            activeAudioRef.current = null;
+          };
+          audio.onerror = () => {
+            setIsSpeaking(false);
+            activeAudioRef.current = null;
+          };
+          await audio.play();
+          return;
+        }
+      }
+    } catch (apiErr) {
+      console.warn("[TTS] Sarvam backend TTS failed, using browser Web Speech fallback:", apiErr);
+    }
+
+    // Fallback: Browser Web Speech API
+    if (typeof window !== 'undefined' && 'speechSynthesis' in window) {
+      try {
+        const utterance = new SpeechSynthesisUtterance(cleanSpeechText);
+        const voices = window.speechSynthesis.getVoices();
+        const langPrefix = (langCode || 'en-IN').split('-')[0].toLowerCase();
+
+        const matchingVoice = voices.find(v => v.lang.toLowerCase().startsWith(langPrefix)) ||
+                              voices.find(v => v.lang.toLowerCase().includes(langPrefix));
+
+        if (matchingVoice) {
+          utterance.voice = matchingVoice;
+          utterance.lang = matchingVoice.lang;
+        } else {
+          utterance.lang = langCode || 'en-IN';
+        }
+
+        utterance.rate = 0.95;
+        utterance.pitch = 1.0;
+
+        utterance.onstart = () => setIsSpeaking(true);
+        utterance.onend = () => setIsSpeaking(false);
+        utterance.onerror = () => setIsSpeaking(false);
+
+        window.speechSynthesis.speak(utterance);
+      } catch (e) {
+        console.warn("Browser speech synthesis error:", e);
+        setIsSpeaking(false);
+      }
+    } else {
+      setIsSpeaking(false);
+    }
+  }
+
+  // Pre-load browser speech voices
+  useEffect(() => {
+    if (typeof window !== 'undefined' && 'speechSynthesis' in window) {
+      window.speechSynthesis.getVoices();
+      window.speechSynthesis.onvoiceschanged = () => {
+        window.speechSynthesis.getVoices();
+      };
+    }
+    return () => {
+      stopSpeech();
+    };
+  }, []);
 
   useEffect(() => {
     async function fetchHealth() {
@@ -263,11 +402,49 @@ export default function App() {
     }
   }
 
-  // Voice Recording Lifecycle
+  // Voice Recording Lifecycle with Zero-Latency Real-Time Recognition & Auto-Silence Detection
   async function startRecording() {
     setMicError('');
     audioChunksRef.current = [];
+    liveTranscriptRef.current = '';
     setCurrentResult(null);
+
+    // Initialize Real-Time Web Speech Recognition for instant 0ms STT
+    if (typeof window !== 'undefined' && ((window as any).SpeechRecognition || (window as any).webkitSpeechRecognition)) {
+      try {
+        const SpeechRec = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
+        const recognition = new SpeechRec();
+        recognition.continuous = true;
+        recognition.interimResults = true;
+        recognition.lang = selectedLanguage || 'hi-IN';
+
+        recognition.onresult = (event: any) => {
+          let textAccum = '';
+          for (let i = 0; i < event.results.length; i++) {
+            textAccum += event.results[i][0].transcript + ' ';
+          }
+          const cleanAcc = textAccum.trim();
+          if (cleanAcc) {
+            liveTranscriptRef.current = cleanAcc;
+            setActiveQuery(cleanAcc);
+
+            // Auto-Submit on Silence (fires 750ms after user pauses speaking)
+            if (silenceTimeoutRef.current) clearTimeout(silenceTimeoutRef.current);
+            silenceTimeoutRef.current = setTimeout(() => {
+              if (isRecordingRef.current && liveTranscriptRef.current) {
+                stopRecording();
+              }
+            }, 750);
+          }
+        };
+
+        recognition.onerror = () => {};
+        recognition.start();
+        speechRecognitionRef.current = recognition;
+      } catch (e) {
+        console.warn("[App] Speech recognition init failed, using audio fallback:", e);
+      }
+    }
 
     try {
       const stream = await navigator.mediaDevices.getUserMedia({
@@ -298,6 +475,15 @@ export default function App() {
           streamRef.current = null;
         }
 
+        // If real-time transcript was captured, dispatch text query immediately (0ms STT latency!)
+        if (liveTranscriptRef.current && liveTranscriptRef.current.trim().length > 0) {
+          const finalPrompt = liveTranscriptRef.current.trim();
+          liveTranscriptRef.current = '';
+          handleTextSubmit(finalPrompt);
+          return;
+        }
+
+        // Otherwise fallback to Sarvam AI cloud audio transcription
         if (audioBlob.size > 0 && isRecordingRef.current === false) {
           handleAudioSubmit(audioBlob);
         }
@@ -334,6 +520,18 @@ export default function App() {
   function stopRecording() {
     if (!isRecordingRef.current) return;
     isRecordingRef.current = false;
+
+    if (silenceTimeoutRef.current) {
+      clearTimeout(silenceTimeoutRef.current);
+      silenceTimeoutRef.current = null;
+    }
+
+    if (speechRecognitionRef.current) {
+      try {
+        speechRecognitionRef.current.stop();
+      } catch (e) {}
+      speechRecognitionRef.current = null;
+    }
 
     if (timerIntervalRef.current) {
       clearInterval(timerIntervalRef.current);
@@ -387,16 +585,26 @@ export default function App() {
       const mapped = mapBackendResponse(data, res.status);
 
       const transcriptText = data.transcript || 'Spoken Indic Query';
+      const script = detectScript(transcriptText);
       setActiveQuery(transcriptText);
-      setDetectedScriptInfo(detectScript(transcriptText));
+      setDetectedScriptInfo(script);
       setCurrentResult(mapped);
 
       if (mapped.status === 'GROUNDED_SUCCESS') {
         setPipelineState('grounded');
+        if (autoSpeak && mapped.answer) {
+          speakText(mapped.answer, script.code);
+        }
       } else if (mapped.status === 'GEMINI_FALLBACK') {
         setPipelineState('fallback');
+        if (autoSpeak && mapped.answer) {
+          speakText(mapped.answer, script.code);
+        }
       } else {
         setPipelineState('refused');
+        if (autoSpeak && (mapped.reason || mapped.answer)) {
+          speakText(mapped.reason || mapped.answer, script.code);
+        }
       }
     } catch (err: any) {
       clearTimeout(clientTimeout);
@@ -417,6 +625,7 @@ export default function App() {
   // Text Submit Endpoint
   async function handleTextSubmit(text: string) {
     if (!text || text.trim().length === 0) return;
+    stopSpeech();
     const cleanText = text.trim();
     setActiveQuery(cleanText);
     setQueryInput('');
@@ -451,10 +660,19 @@ export default function App() {
 
       if (mapped.status === 'GROUNDED_SUCCESS') {
         setPipelineState('grounded');
+        if (autoSpeak && mapped.answer) {
+          speakText(mapped.answer, scriptInfo.code);
+        }
       } else if (mapped.status === 'GEMINI_FALLBACK') {
         setPipelineState('fallback');
+        if (autoSpeak && mapped.answer) {
+          speakText(mapped.answer, scriptInfo.code);
+        }
       } else {
         setPipelineState('refused');
+        if (autoSpeak && (mapped.reason || mapped.answer)) {
+          speakText(mapped.reason || mapped.answer, scriptInfo.code);
+        }
       }
     } catch (err: any) {
       clearTimeout(clientTimeout);
@@ -623,15 +841,20 @@ export default function App() {
             ))}
           </div>
 
-          {/* Big Circular Primary Action Button */}
+          {/* Big Circular Primary Action Button with Dynamic Animations */}
           <div className="wellness-primary-button-wrap">
             <button
               type="button"
-              className={`wellness-outer-circle ${isBusy ? 'disabled' : ''}`}
+              className={`wellness-outer-circle ${isBusy ? 'is-thinking disabled' : ''} ${pipelineState === 'listening' ? 'is-listening' : ''}`}
               onClick={toggleRecording}
               disabled={isBusy}
               aria-label={getButtonLabel()}
             >
+              {/* Radiant Multi-Color Aurora Glow in Background when Searching/Thinking */}
+              {isBusy && <div className="aurora-glow-ring" />}
+              {/* Rotating Conic Multi-Color Shimmer Border */}
+              {isBusy && <div className="conic-spinner-border" />}
+
               <div className="wellness-inner-core">
                 {pipelineState === 'listening' ? (
                   // Stop / Pause Icon
@@ -639,10 +862,17 @@ export default function App() {
                     <rect x="6" y="6" width="12" height="12" rx="2.5" />
                   </svg>
                 ) : (pipelineState === 'transcribing' || pipelineState === 'retrieving') ? (
-                  // Processing Spinner Ring
-                  <svg width="42" height="42" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
-                    <path d="M21 12a9 9 0 1 1-6.219-8.56" />
-                  </svg>
+                  // Gorgeous Luminous AI Thinking Orb with Waveform Bars
+                  <div className="ai-thinking-orb">
+                    <div className="ai-orb-ring" />
+                    <div className="ai-orb-wave-bars">
+                      <span className="ai-wave-bar" />
+                      <span className="ai-wave-bar" />
+                      <span className="ai-wave-bar" />
+                      <span className="ai-wave-bar" />
+                      <span className="ai-wave-bar" />
+                    </div>
+                  </div>
                 ) : pipelineState === 'refused' ? (
                   // Shield Refusal Icon
                   <svg width="42" height="42" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
@@ -666,7 +896,10 @@ export default function App() {
               </div>
             </button>
 
-            <span className="button-state-caption">{getButtonLabel()}</span>
+            <span className={`button-state-caption ${isBusy ? 'is-shimmer' : ''}`}>
+              {isBusy && <span className="badge-sparkle">✦</span>}
+              {getButtonLabel()}
+            </span>
           </div>
 
           {/* ── Or Divider & Parallel Text Input ── */}
@@ -790,6 +1023,52 @@ export default function App() {
                 </div>
               )}
 
+              {/* ── Google Assistant Spoken Voice Output Bar ── */}
+              <div className="answer-voice-bar">
+                <button
+                  type="button"
+                  className={`btn-voice-speak ${isSpeaking ? 'speaking' : ''}`}
+                  onClick={() => {
+                    if (isSpeaking) {
+                      stopSpeech();
+                    } else {
+                      speakText(cleanAnswer || currentResult.answer || currentResult.reason || '', detectedScriptInfo.code);
+                    }
+                  }}
+                  title={isSpeaking ? "Stop speaking" : "Listen to answer (Google Assistant voice)"}
+                  aria-label={isSpeaking ? "Stop spoken answer" : "Speak answer aloud"}
+                >
+                  {isSpeaking ? (
+                    <>
+                      <div className="voice-equalizer-anim">
+                        <span className="eq-bar eq-1" />
+                        <span className="eq-bar eq-2" />
+                        <span className="eq-bar eq-3" />
+                        <span className="eq-bar eq-4" />
+                      </div>
+                      <span>Speaking ({detectedScriptInfo.label.split(' ')[0]})... Tap to Stop</span>
+                    </>
+                  ) : (
+                    <>
+                      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+                        <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5" />
+                        <path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07" />
+                      </svg>
+                      <span>Listen to Answer ({detectedScriptInfo.label.split(' ')[0]})</span>
+                    </>
+                  )}
+                </button>
+
+                <label className="auto-speak-toggle" title="Automatically read aloud answers like Google Assistant">
+                  <input
+                    type="checkbox"
+                    checked={autoSpeak}
+                    onChange={(e) => setAutoSpeak(e.target.checked)}
+                  />
+                  <span className="toggle-label">Auto-speak</span>
+                </label>
+              </div>
+
             </div>
           )}
 
@@ -797,16 +1076,21 @@ export default function App() {
           {!currentResult && (
             <div className="wellness-sample-pills">
               {[
-                { q: "what is a corporation?", label: "Corporation (Grounded)", type: 'grounded' },
+                { q: "what is a corporation?", label: "Corporation (EN · Grounded)", type: 'grounded' },
+                { q: "निगम क्या है?", label: "निगम क्या है? (HI · Grounded)", type: 'grounded' },
+                { q: "ನಿಗಮ ಎಂದರೇನು?", label: "ನಿಗಮ ಎಂದರೇನು? (KN · Grounded)", type: 'grounded' },
+                { q: "கார்ப்பரேஷன் என்றால் என்ன?", label: "கார்ப்பரேஷன்? (TA · Grounded)", type: 'grounded' },
+                { q: "కార్పొరేషన్ అంటే ఏమిటి?", label: "కార్పొరేషన్? (TE · Grounded)", type: 'grounded' },
+                { q: "what causes a stye?", label: "What causes a Stye? (Grounded)", type: 'grounded' },
+                { q: "what is normal blood pressure?", label: "Normal Blood Pressure (Grounded)", type: 'grounded' },
                 { q: "Who is India Prime Minister?", label: "Prime Minister (Gemini Fallback)", type: 'fallback' },
                 { q: "What is photosynthesis?", label: "Photosynthesis (Gemini Fallback)", type: 'fallback' },
-                { q: "How to make a bomb?", label: "Make a Bomb (Refusal)", type: 'refusal' }
+                { q: "How to make a bomb?", label: "Make a Bomb (Safety Refusal)", type: 'refusal' }
               ].map((p, idx) => (
                 <button
                   key={idx}
                   type="button"
-                  className={`sample-pill-btn ${p.type === 'refusal' ? 'refusal' : (p.type === 'fallback' ? 'fallback' : '')}`}
-                  style={p.type === 'fallback' ? { borderColor: 'rgba(56, 189, 248, 0.4)', color: '#BAE6FD' } : undefined}
+                  className={`sample-pill-btn ${p.type}`}
                   onClick={() => handleTextSubmit(p.q)}
                 >
                   {p.label}

@@ -161,10 +161,11 @@ export class GenerationService {
 
     const targetLangPrompt = langInstructions[lang] || langInstructions['en'];
 
-    // Format context passages with source tags
+    // Format concise context passages with source tags
     const contextText = contexts.map((c, i) => {
       const srcId = c.chunk.id || `doc-${i}`;
-      return `[Source ${i + 1}] (ID: ${srcId})\n${c.chunk.text}`;
+      const snippet = c.chunk.text.length > 400 ? c.chunk.text.substring(0, 390) + '...' : c.chunk.text;
+      return `[Source ${i + 1}] (ID: ${srcId})\n${snippet}`;
     }).join('\n\n');
 
     const prompt = `You are a precision factual question-answering assistant.
@@ -181,7 +182,7 @@ STRICT GROUNDING INSTRUCTIONS:
 2. If the context does not contain sufficient factual evidence to answer the question accurately, say EXACTLY:
 "${refusalText}"
 3. Do NOT extrapolate, speculate, or introduce external knowledge.
-4. If facts are present, formulate a concise, direct answer (1-3 sentences).
+4. Formulate a direct, concise answer in 1-2 sentences.
 5. Explicitly reference the source tag (e.g. [Source 1]) when stating facts.
 6. ${targetLangPrompt}`;
 
@@ -193,8 +194,8 @@ STRICT GROUNDING INSTRUCTIONS:
           model: currentModel,
           contents: prompt,
           config: {
-            temperature: 0.1,
-            maxOutputTokens: 500
+            temperature: 0.0,
+            maxOutputTokens: 120
           }
         });
 
@@ -293,7 +294,7 @@ STRICT GROUNDING INSTRUCTIONS:
     }
 
     const systemInstruction = `You are a knowledgeable and helpful factual assistant. 
-Answer the user's question directly, accurately, factually, and concisely in 1 to 2 clear sentences.
+Answer the user's question directly, accurately, factually, and concisely in 1 clear sentence.
 ${targetLangPrompt}`;
 
     const modelsToTry = [this.modelName, ...this.fallbackModelChain.filter(m => m !== this.modelName)];
@@ -313,12 +314,12 @@ ${targetLangPrompt}`;
             contents: query,
             config: {
               systemInstruction,
-              temperature: 0.2,
-              maxOutputTokens: 200
+              temperature: 0.0,
+              maxOutputTokens: 80
             }
           }),
-          3500,
-          `Model ${currentModel} exceeded 3.5s timeout`
+          8000,
+          `Model ${currentModel} exceeded 8s timeout`
         );
 
         const respObj = response as any;

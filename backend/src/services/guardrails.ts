@@ -199,12 +199,14 @@ export class GuardrailService {
     if (
       !answerText || 
       answerText.includes(refusalPhrase) ||
-      answerText.includes("I don't have enough context")
+      answerText.includes("I don't have enough context") ||
+      answerText.includes("does not contain sufficient")
     ) {
       return {
-        passed: true,
+        passed: false,
         isGrounded: false,
-        fallbackText: answerText || "Context relevance below confidence threshold"
+        fallbackText: answerText || "Context relevance below confidence threshold",
+        reason: "Evidence does not contain sufficient facts to answer the question."
       };
     }
 

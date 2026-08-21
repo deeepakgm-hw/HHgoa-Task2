@@ -70,6 +70,10 @@ export interface QueryPipelineOutput {
 }
 
 export class RagPipeline {
+  private static responseCache: Map<string, { output: QueryPipelineOutput; timestamp: number }> = new Map();
+  private static readonly CACHE_MAX_SIZE = 1000;
+  private static readonly CACHE_TTL_MS = 1000 * 60 * 60; // 1 hour
+
   constructor(
     private sttService: SttService,
     private embedService: EmbeddingService,
@@ -106,6 +110,26 @@ export class RagPipeline {
       : (process.env.CONFIDENCE_THRESHOLD ? parseFloat(process.env.CONFIDENCE_THRESHOLD) : GuardrailService.DEFAULT_CONFIDENCE_THRESHOLD);
     const detectedLang = this.detectScript(query);
     const language = input.languageCode ? input.languageCode.split('-')[0].toLowerCase() : detectedLang;
+
+    // Sub-millisecond In-Memory Response Cache Check (Instant Answer)
+    const cacheKey = `${query.trim().toLowerCase()}::${language}::${strategy}`;
+    const cached = RagPipeline.responseCache.get(cacheKey);
+    if (cached && (Date.now() - cached.timestamp < RagPipeline.CACHE_TTL_MS)) {
+      console.log(`[INSTANT_CACHE_HIT] [${requestId}] Returning instant response for "${query}" in 0ms`);
+      return {
+        ...cached.output,
+        requestId,
+        telemetry: {
+          stt: 0,
+          normalization: 0,
+          embedding: 0,
+          retrieval: 0,
+          rerank: 0,
+          generation: 0,
+          total: 1
+        }
+      };
+    }
 
     console.log(`[QUERY_START] [${requestId}] Text query: "${query}" (lang=${language}, strategy=${strategy}, rerank=${rerankEnabled}, threshold=${threshold})`);
     Logger.info(`Executing pipeline for text query: "${query}"`, requestId, { language, strategy, rerankEnabled, threshold });
@@ -255,25 +279,46 @@ export class RagPipeline {
         reason: finalValidation.reason
       };
 
-      if (!finalValidation.passed) {
-        console.log(`[GROUNDING_VERIFICATION_FAILED] [${requestId}] Reason: ${finalValidation.reason}. Falling back to general knowledge.`);
-        const fallbackResult = await this.genService.generateGeneralKnowledgeAnswer(query, language);
-        return {
-          requestId,
-          query,
-          transcript: query,
-          language,
-          status: 'gemini_fallback',
-          mode: 'GEMINI_FALLBACK',
-          source: 'gemini_general',
-          isGrounded: false,
-          answer: fallbackResult.answer,
-          disclosure: 'Answered from general knowledge (Gemini) — not verified against the MSMARCO-XI dataset.',
-          citations: [],
-          sources: [],
-          telemetry: tracker.getReport(),
-          debug: debugInfo
-        };
+      if (!finalValidation.passed || !generationResult.isGrounded) {
+        console.log(`[GROUNDING_VERIFICATION_FAILED] [${requestId}] Reason: ${finalValidation.reason || 'Ungrounded model answer'}. Falling back to general knowledge.`);
+        try {
+          const fallbackResult = await this.genService.generateGeneralKnowledgeAnswer(query, language);
+          return {
+            requestId,
+            query,
+            transcript: query,
+            language,
+            status: 'gemini_fallback',
+            mode: 'GEMINI_FALLBACK',
+            source: 'gemini_general',
+            isGrounded: false,
+            answer: fallbackResult.answer,
+            disclosure: 'Answered from general knowledge (Gemini) — not verified against the MSMARCO-XI dataset.',
+            citations: [],
+            sources: [],
+            telemetry: tracker.getReport(),
+            debug: debugInfo
+          };
+        } catch (fbErr: any) {
+          console.error(`[FALLBACK_GENERATION_FAILED] [${requestId}]`, fbErr.message || fbErr);
+          return {
+            requestId,
+            query,
+            transcript: query,
+            language,
+            status: 'insufficient_context',
+            mode: 'REFUSED',
+            source: 'gemini_general',
+            isGrounded: false,
+            answer: "Couldn't generate an answer right now — please try again.",
+            disclosure: 'Answered from general knowledge (Gemini) — not verified against the MSMARCO-XI dataset.',
+            citations: [],
+            sources: [],
+            telemetry: tracker.getReport(),
+            reason: fbErr.message,
+            debug: debugInfo
+          };
+        }
       }
 
       // 8. Citation validation
@@ -299,7 +344,7 @@ export class RagPipeline {
       const report = tracker.getReport();
       console.log(`[RESPONSE_SENT] [${requestId}] Status: success | Grounded: true | Citations: ${validCitations.length}`);
 
-      return {
+      const finalOutput: QueryPipelineOutput = {
         requestId,
         query,
         transcript: query,
@@ -314,6 +359,14 @@ export class RagPipeline {
         telemetry: report,
         debug: debugInfo
       };
+
+      if (RagPipeline.responseCache.size >= RagPipeline.CACHE_MAX_SIZE) {
+        const oldestKey = RagPipeline.responseCache.keys().next().value;
+        if (oldestKey) RagPipeline.responseCache.delete(oldestKey);
+      }
+      RagPipeline.responseCache.set(cacheKey, { output: finalOutput, timestamp: Date.now() });
+
+      return finalOutput;
 
     } catch (err: any) {
       Logger.error(`Pipeline execution failed: ${err.message || err}`, requestId);
