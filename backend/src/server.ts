@@ -75,9 +75,22 @@ const upload = multer({
   }
 });
 
-// Initialize database
+// Initialize database with automatic fallback to bundled seed vector store
+const candidateDbPaths = [
+  path.join(__dirname, '..', 'data', 'vector_store.json'),
+  path.join(__dirname, '..', 'data', 'vector_store_seed.json'),
+  path.join(process.cwd(), 'backend', 'data', 'vector_store.json'),
+  path.join(process.cwd(), 'backend', 'data', 'vector_store_seed.json'),
+  path.join(process.cwd(), 'data', 'vector_store.json'),
+  path.join(process.cwd(), 'data', 'vector_store_seed.json'),
+  '/app/backend/data/vector_store.json',
+  '/app/backend/data/vector_store_seed.json',
+  '/app/data/vector_store.json',
+  '/app/data/vector_store_seed.json'
+];
+const vectorDbPath = candidateDbPaths.find(p => fs.existsSync(p)) || candidateDbPaths[0];
+
 const vectorDb = new VectorDatabase();
-const vectorDbPath = path.join(__dirname, '..', 'data', 'vector_store.json');
 
 // We will load the database asynchronously before starting the server
 

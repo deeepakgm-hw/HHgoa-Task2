@@ -57,12 +57,19 @@ export class EmbeddingService {
    * Loads the persistent cache of text embeddings from disk.
    */
   private loadCache(): void {
-    if (fs.existsSync(this.cachePath)) {
+    const candidatePaths = [
+      this.cachePath,
+      path.join(path.dirname(this.cachePath), 'embeddings_cache_seed.json'),
+      path.join(path.dirname(this.cachePath), 'embeddings_cache.seed.backup.json')
+    ];
+    const resolved = candidatePaths.find(p => fs.existsSync(p));
+    if (resolved) {
       try {
-        const data = fs.readFileSync(this.cachePath, 'utf8');
+        const data = fs.readFileSync(resolved, 'utf8');
         this.cache = JSON.parse(data);
+        console.log(`✓ Loaded embeddings cache with ${Object.keys(this.cache).length} entries from: ${resolved}`);
       } catch (err) {
-        console.error(`Failed to load embeddings cache from ${this.cachePath}:`, err);
+        console.error(`Failed to load embeddings cache from ${resolved}:`, err);
       }
     }
   }
