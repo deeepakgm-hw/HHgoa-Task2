@@ -19,22 +19,10 @@ import { Logger } from './utils/logger';
 
 const app = express();
 
-// Whitelist CORS origins configuration
-const allowedOrigins = process.env.ALLOWED_ORIGINS 
-  ? process.env.ALLOWED_ORIGINS.split(',') 
-  : ['http://localhost:3000', 'http://localhost:5173'];
-
+// Permissive production CORS for deployed domains, localhost, and tunnels
 app.use(cors({
-  origin: (origin, callback) => {
-    if (!origin) return callback(null, true);
-    const isLocal = origin.startsWith('http://localhost') || origin.startsWith('http://127.0.0.1');
-    const isAllowed = allowedOrigins.indexOf(origin) !== -1 || isLocal;
-    if (!isAllowed && process.env.NODE_ENV === 'production') {
-      const msg = `The CORS policy for this site does not allow access from the specified Origin: ${origin}`;
-      return callback(new Error(msg), false);
-    }
-    return callback(null, true);
-  }
+  origin: true,
+  credentials: true
 }));
 
 app.use(express.json());

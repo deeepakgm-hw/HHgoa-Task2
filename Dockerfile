@@ -1,12 +1,12 @@
 # ==============================================================================
 # Production Multi-Stage Dockerfile for RAGWave
-# Unified Full-Stack Voice-Enabled Indic RAG Application
+# Unified Full-Stack Voice-Enabled Indic RAG Application (Debian glibc for ONNX)
 # ==============================================================================
 
 # ------------------------------------------------------------------------------
 # Stage 1: Build Frontend & Backend in Unified Context
 # ------------------------------------------------------------------------------
-FROM node:20-alpine AS builder
+FROM node:20-slim AS builder
 WORKDIR /app
 
 # Copy root and subpackage manifests
@@ -27,13 +27,13 @@ RUN npm run build --prefix backend
 RUN npm run build --prefix frontend
 
 # ------------------------------------------------------------------------------
-# Stage 2: Production Runtime Container
+# Stage 2: Production Runtime Container (Debian glibc)
 # ------------------------------------------------------------------------------
-FROM node:20-alpine AS runner
+FROM node:20-slim AS runner
 WORKDIR /app
 
 # Install curl for container healthcheck
-RUN apk add --no-cache curl
+RUN apt-get update && apt-get install -y --no-install-recommends curl && rm -rf /var/lib/apt/lists/*
 
 ENV NODE_ENV=production
 ENV PORT=5000
@@ -42,6 +42,7 @@ ENV PORT=5000
 COPY --from=builder /app/backend/node_modules ./node_modules
 COPY --from=builder /app/backend/dist ./dist
 COPY --from=builder /app/backend/data ./data
+COPY --from=builder /app/backend/data /app/backend/data
 COPY --from=builder /app/frontend/dist /app/frontend/dist
 
 EXPOSE 5000
