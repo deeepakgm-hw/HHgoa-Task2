@@ -1,0 +1,16 @@
+# Exclude large vector store files from Docker build context
+# They will be downloaded at container startup instead
+backend/data/vector_store_part*.json.gz
+backend/data/vector_store.json
+backend/data/hnsw_index.json
+backend/data/hnsw_vectors.bin
+
+# Node modules
+node_modules/
+backend/node_modules/
+frontend/node_modules/
+
+# Dev/test artifacts
+*.log
+.env*
+.git/
